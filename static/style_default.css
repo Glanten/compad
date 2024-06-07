@@ -5,6 +5,7 @@ body {
   color: white;
 }
 
+/* main sections' styling */
 header {
   position: fixed;
   left: 0;
@@ -29,4 +30,11 @@ footer {
   background-color: rgba(0, 0, 0, 0.33);
   text-align: center;
   padding: 20px;
+}
+
+/* individual element styles */
+a {
+  text-decoration: none;
+  color: white;
+  font-weight: bold;
 }
