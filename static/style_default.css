@@ -1,0 +1,32 @@
+body {
+  background-image: url("darkPurple.png");
+  background-repeat: repeat;
+  font-family: "Courier New", Courier, monospace;
+  color: white;
+}
+
+header {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.33);
+  text-align: center;
+}
+
+main {
+  max-width: 500px;
+  margin: auto;
+  background-color: rgba(0, 0, 0, 0.33);
+  padding: 20px;
+}
+
+footer {
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.33);
+  text-align: center;
+  padding: 20px;
+}

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="viewport" content="initial-scale=1, width=device-width">
+    <link href="static\style_default.css" rel="stylesheet">
+    <title>Compad | {% block page_title %}{% endblock %}</title>
+    {% block head_block %}{% endblock %}
+</head>
+
+<body>
+
+    <header>
+        <p>Header content</p>
+    </header>
+
+    <nav>
+        <p>Nav content</p>
+    </nav>
+
+    {% block content %}{% endblock %}
+
+
+    <footer>
+        <p>Footer content</p>
+    </footer>
+
+</body>
+
+</html>
