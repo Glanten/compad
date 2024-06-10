@@ -13,11 +13,14 @@ header {
   width: 100%;
   background-color: rgba(0, 0, 0, 0.33);
   text-align: center;
+  padding: 20px;
 }
 
 main {
   max-width: 500px;
-  margin: auto;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 75px;
   background-color: rgba(0, 0, 0, 0.33);
   padding: 20px;
 }
@@ -30,6 +33,10 @@ footer {
   background-color: rgba(0, 0, 0, 0.33);
   text-align: center;
   padding: 20px;
+}
+
+nav {
+  visibility: hidden;
 }
 
 /* individual element styles */
