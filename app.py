@@ -120,6 +120,10 @@ def logout():
     # Redirect user to login form
     return redirect("/")
 
+@app.route("/admin")
+def admin():
+    return render_template("admin.html")
+
 @app.route("/credits")
 def credits():
     return render_template("credits.html")
