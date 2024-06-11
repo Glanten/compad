@@ -11,15 +11,19 @@
 <body>
 
     <header>
-        <p>Header content</p>
+        <div style="display: inline-block;">
+            <span>Header content</span>
+            <span><a href="/logout">Logout</a></span>
+        </div>
     </header>
 
     <nav>
         <p>Nav content</p>
     </nav>
 
-    {% block main %}{% endblock %}
-
+    <main>
+        {% block main %}{% endblock %}
+    </main>
 
     <footer>
         <p>Footer content</p>
