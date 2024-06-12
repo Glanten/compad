@@ -52,16 +52,16 @@ def register():
         )
         if existing_name:
             # if <existing_name> returns anything, a record must already exist
-            return render_template("error.html")
+            return render_template("error.html", error_message="username already exists")
         # ensure a username was submitted
         if not request.form.get("username"):
-            return render_template("error.html")
+            return render_template("error.html", error_message="no username submitted")
         # ensure a password was submitted
         elif not request.form.get("password"):
-            return render_template("error.html")
+            return render_template("error.html", error_message="no password submitted")
         # ensure password and confirmation match
         elif request.form.get("password") != request.form.get("confirmation"):
-            return render_template("error.html")
+            return render_template("error.html", error_message="passwords do not match")
         
         # register the user
         else:
@@ -87,11 +87,11 @@ def login():
     if request.method == "POST":
         # Ensure username was submitted
         if not request.form.get("username"):
-            return render_template("error.html")
+            return render_template("error.html", error_message="no username submitted")
         
         # Ensure password was submitted
         elif not request.form.get("password"):
-            return render_template("error.html")
+            return render_template("error.html", error_message="no password submitted")
 
         # Query database for username
         rows = db.execute("SELECT * FROM users WHERE username = ?", request.form.get("username"))
@@ -100,7 +100,7 @@ def login():
         if len(rows) != 1 or not check_password_hash(
             rows[0]["hash"], request.form.get("password")
         ):
-            return render_template("error.html")
+            return render_template("error.html", error_message="incorrect username or password")
 
         # Remember which user has logged in
         session["user_id"] = rows[0]["id"]
@@ -113,6 +113,7 @@ def login():
         return render_template("login.html")
     
 @app.route("/logout")
+@login_required
 def logout():
     """User gets logged out"""
     # Forget any user_id
@@ -121,12 +122,19 @@ def logout():
     return redirect("/")
 
 @app.route("/admin")
+@login_required
 def admin():
-    return render_template("admin.html")
+    """Show all users, their credits, and their admin status"""
+    user_list = db.execute("SELECT username, credits, admin FROM users")
+    
+    return render_template("admin.html", user_list=user_list)
 
 @app.route("/credits")
+@login_required
 def credits():
-    return render_template("credits.html")
+    """Show user's credits"""
+    credits_balance = db.execute("SELECT credits FROM users WHERE id = ?", session["user_id"])[0]["credits"]
+    return render_template("credits.html", credits_balance=credits_balance)
 
 @app.route("/system")
 def system():
@@ -143,4 +151,4 @@ def compad():
 # Error page
 @app.errorhandler(404)
 def notfound(e):
-    return render_template("error.html")
+    return render_template("error.html", error_message=e)

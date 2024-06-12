@@ -3,11 +3,11 @@
 {% block head_block %}
 {% endblock %}
 
-{% block page_title %}Page not found{% endblock %}
+{% block page_title %}ERROR{% endblock %}
 
 {% block main %}
 
-<p>Error!</p>
+<p>Error: {{ error_message }}</p>
 <p>Click <a href="/">here</a> to go to the homepage.</p>
 
 {% endblock %}

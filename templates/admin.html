@@ -9,9 +9,56 @@
 
 <h1>Admin</h1>
 
+<!-- list all users, their credits, and their admin status -->
 <h2>Users</h2>
-<p>List users here (username, password, credits, admin status)</p>
-<p>Create new users here</p>
+<p>Here are the users</p>
+<table>
+    <thead>
+        <tr>
+            <th>USERNAME</th>
+            <th>ADMIN?</th>
+            <th>CREDITS</th>
+            <th></th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- loop through the database entries to create table of users -->
+        {% for entry in user_list %}
+        <tr>
+            <td>{{ entry.username }}</td>
+            <td>{% if entry.admin == 1 %}
+                {{ "yes" }}
+                {% else %}
+                {{ "no" }}
+                {% endif %}
+            </td>
+            <td>{{ entry.credits }}</td>
+            <td><button>Change password</button></td>
+            <td><button>Remove user</button></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- new user registration -->
+<h3>Create new users here</h3>
+<form action="/register" method="post">
+    <div>
+        <p>Username:
+            <input autocomplete="off" autofocus name="username" placeholder="Username" type="text">
+        </p>
+    </div>
+    <div>
+        <p>Password:
+            <input name="password" placeholder="Password" type="password">
+        </p>
+    </div>
+    <div>
+        <input name="confirmation" placeholder="Repeat Password" type="password">
+    </div>
+    <button type="submit">Register</button>
+</form>
 
 <h2>Credits</h2>
 <p>Monitor and create credit codes here (code, amount, redeemed status)</p>
