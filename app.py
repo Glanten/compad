@@ -45,7 +45,7 @@ def index():
 @app.route("/register", methods=["GET", "POST"])
 @login_required
 def register():
-    """Register a new user (intended for initial setup only)"""
+    """Register a new user"""
     if request.method == "POST":
         # if user hits register button on form...
         # create lower-case version of username
@@ -136,10 +136,13 @@ def admin():
     if session.get("admin") != 1:
         # if user is not admin, send them to error page
         return render_template("error.html", error_message="administrator access only")
-    else:
-        # if user is admin, get list of users and send them to admin page
-        user_list = db.execute("SELECT username, credits, admin FROM users")
-        return render_template("admin.html", user_list=user_list)
+    
+    # if user is admin...
+    # get list of users and send them to admin page
+    user_list = db.execute("SELECT username, credits, admin, campaign FROM users ORDER BY id")
+    # get list of credstick and send them to admin page
+    credsticks_list = db.execute("SELECT code, credits, state, message FROM credsticks ORDER BY id")
+    return render_template("admin.html", user_list=user_list, credsticks_list=credsticks_list)
 
 @app.route("/credits")
 @login_required
@@ -147,6 +150,46 @@ def credits():
     """Show user's credits"""
     credits_balance = db.execute("SELECT credits FROM users WHERE id = ?", session["user_id"])[0]["credits"]
     return render_template("credits.html", credits_balance=credits_balance)
+
+# create new credstick
+@app.route("/credstick", methods=["GET", "POST"])
+@login_required
+def credstick():
+    """Create new credstick for issue"""
+    # when user hits submit button on form...
+    if request.method == "POST":
+        submitted_credstick_code = request.form.get("credstick_code")
+        submitted_credstick_value = int(request.form.get("credstick_credits"))
+        submitted_credstick_message = request.form.get("credstick_message")
+        # query database for credstick code match
+        existing_code = db.execute(
+            "SELECT * FROM credsticks WHERE code = ?", submitted_credstick_code
+        )
+        if existing_code:
+            # the code must be unique
+            return render_template("error.html", error_message="credstick code already in use")
+        # ensure a code was submitted
+        if not request.form.get("credstick_code"):
+            return render_template("error.html", error_message="no credstick code submitted")
+        # ensure a credits value was submitted
+        elif not request.form.get("credstick_credits"):
+            return render_template("error.html", error_message="no credits submitted")
+        # ensure credstick does not have a negative value
+        elif int(request.form.get("credstick_credits")) < 0:
+            return render_template("error.html", error_message="credstick must not have negative value")
+        # ensure a message was submitted
+        elif not request.form.get("credstick_message"):
+            return render_template("error.html", error_message="no message submitted")
+        
+        # create the new credstick
+        else:
+            db.execute("INSERT INTO credsticks (code, credits, message) VALUES(?, ?, ?)", submitted_credstick_code, submitted_credstick_value, submitted_credstick_message)
+            return redirect("/admin")
+        
+    else:
+    # user arrived by GET (i.e. typed in URL or via link) instead of POST, display registration page
+    # send user to appropriate web page
+        return redirect("/admin")
 
 @app.route("/system")
 @login_required

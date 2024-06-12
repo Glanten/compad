@@ -10,79 +10,174 @@
 <h1>Admin</h1>
 
 <!-- list all users, their credits, and their admin status -->
-<h2 class="cursor_pointer" onclick="collapseSegment('admin_user_list', 'admin_user_list_expand')">
-    Users
-    <img class="float_right" id="admin_user_list_expand" src="static\icon-arrow-down.svg" />
-</h2>
-<div class="collapsible" id="admin_user_list">
-    <h3>Current users</h3>
-    <table id="admin_users_table">
-        <thead>
-            <tr>
-                <th>USERNAME</th>
-                <th>ADMIN?</th>
-                <th>CREDITS</th>
-                <th></th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- loop through the database entries to create table of users -->
-            {% for entry in user_list %}
-            <tr>
-                <td>{{ entry.username }}</td>
-                <td>
-                    {% if entry.admin == 1 %}
-                    {{ "yes" }}
-                    {% else %}
-                    {{ "no" }}
-                    {% endif %}
-                </td>
-                <td>{{ entry.credits }}</td>
-                <td><button>Change password</button></td>
-                <td>
-                    {% if entry.admin != 1 %}
-                    <a href=""><img src="static\icon-bin.svg" /></a>
-                    {% endif %}
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<div class="darker">
+    <h2 class="cursor_pointer" onclick="collapseSegment('admin_user_list', 'admin_user_list_expand')">
+        Users
+        <img class="float_right" id="admin_user_list_expand" src="static\icon-arrow-down.svg" />
+    </h2>
+    <div class="collapsible" id="admin_user_list">
 
-    <div id="admin_new_user">
-        <!-- new user registration -->
-        <h3>Create new users here</h3>
-        <form action="/register" method="post">
-            <div>
-                <p>Username:
-                    <input autocomplete="off" name="username" placeholder="Username" type="text">
-                </p>
-            </div>
-            <div>
-                <p>Password:
-                    <input name="password" placeholder="Password" type="password">
-                    <input name="confirmation" placeholder="Repeat Password" type="password">
-                </p>
-            </div>
-            <button type="submit">Register</button>
-        </form>
+        <div>
+            <!-- new user registration -->
+            <h3>New user</h3>
+            <form action="/register" method="post">
+                <div>
+                    <p>Username:
+                        <input autocomplete="off" name="username" placeholder="Username" type="text">
+                    </p>
+                </div>
+                <div>
+                    <p>Password:
+                        <input name="password" placeholder="Password" type="password">
+                        <input name="confirmation" placeholder="Repeat Password" type="password">
+                    </p>
+                </div>
+                <button type="submit">Register</button>
+            </form>
+        </div>
+
+        <h3>Existing users</h3>
+        <table class="admin_table">
+            <thead>
+                <tr>
+                    <th>USERNAME</th>
+                    <th>ADMIN?</th>
+                    <th>CAMPAIGN</th>
+                    <th>CREDITS</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- loop through the database entries to create table of users -->
+                {% for entry in user_list %}
+                <tr>
+                    <td>
+                        {{ entry.username }}
+                    </td>
+                    <td>
+                        {% if entry.admin == 1 %}
+                        {{ "yes" }}
+                        {% else %}
+                        {{ "no" }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ entry.campaign }}
+                    </td>
+                    <td>
+                        {{ entry.credits }}
+                    </td>
+                    <td>
+                        <button>Change password</button>
+                    </td>
+                    <td>
+                        {% if entry.admin != 1 %}
+                        <a href=""><img src="static\icon-bin.svg" /></a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
     </div>
 </div>
 
-<h2>Credits</h2>
-<div>
-    <p>Monitor and create credit codes here (code, amount, redeemed status)</p>
+<div class="darker">
+    <h2 class="cursor_pointer" onclick="collapseSegment('admin_credits', 'admin_credits_expand')">
+        Credits
+        <img class="float_right" id="admin_credits_expand" src="static\icon-arrow-down.svg" />
+    </h2>
+    <div class="collapsible" id="admin_credits">
+
+        <div>
+            <!-- new credstick creation -->
+            <h3>New credstick</h3>
+            <form action="/credstick" method="post">
+                <p>
+                    Code: <input autocomplete="off" name="credstick_code" placeholder="Code" type="text">
+                </p>
+                <p>
+                    Value: <input name="credstick_credits" placeholder="Credits" type="number">
+                </p>
+                <p>
+                    Message: <input name="credstick_message" placeholder="Message" type="text">
+                </p>
+                <button type="submit">Create</button>
+            </form>
+        </div>
+
+        <h3>Existing credsticks</h3>
+        <table class="admin_table">
+            <thead>
+                <tr>
+                    <th>CODE</th>
+                    <th>CREDITS</th>
+                    <th>MESSAGE</th>
+                    <th>STATE</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- loop through the database entries to create table of credsticks -->
+                {% for stick in credsticks_list %}
+                <tr>
+                    <td>
+                        {{ stick.code }}
+                    </td>
+                    <td>
+                        {{ stick.credits }}
+                    </td>
+                    <td>
+                        {{ stick.message }}
+                    </td>
+                    <td>
+                        {% if stick.state == 0 %}
+                        {{ "active" }}
+                        {% else %}
+                        {{ "redeemed" }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href=""><img src="static\icon-bin.svg" /></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
 </div>
 
-<h2>Starmaps</h2>
-<div>
-    <p>Monitor and create starmap codes here (code, URL)</p>
+<div class="darker">
+    <h2 class="cursor_pointer" onclick="collapseSegment('admin_compad', 'admin_compad_expand')">
+        Compad
+        <img class="float_right" id="admin_compad_expand" src="static\icon-arrow-down.svg" />
+    </h2>
+    <div class="collapsible" id="admin_compad">
+        <p>Send messages here (to, from, message)</p>
+    </div>
 </div>
 
-<h2>Compad</h2>
-<div>
-    <p>Send messages here (to, from, message)</p>
+<div class="darker">
+    <h2 class="cursor_pointer" onclick="collapseSegment('admin_starmaps', 'admin_starmaps_expand')">
+        Starmaps
+        <img class="float_right" id="admin_starmaps_expand" src="static\icon-arrow-down.svg" />
+    </h2>
+    <div class="collapsible" id="admin_starmaps">
+        <p>Monitor and create starmap codes here (code, URL)</p>
+    </div>
+</div>
+
+<div class="darker">
+    <h2 class="cursor_pointer" onclick="collapseSegment('admin_systems', 'admin_systems_expand')">
+        Systems
+        <img class="float_right" id="admin_systems_expand" src="static\icon-arrow-down.svg" />
+    </h2>
+    <div class="collapsible" id="admin_systems">
+        <p>Create star system entries here (details TBD)</p>
+    </div>
 </div>
 
 {% endblock %}

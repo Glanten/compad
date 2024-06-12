@@ -13,9 +13,9 @@
 
     <header>
         <div style="display: inline-block;">
-            <span>Header content</span>
+            Header content
             {% if session['user_id'] %}
-            <span><a href="/logout">Logout</a></span>
+            <a href="/logout"><img src="static/icon-logout.svg" alt="log out" class="float_right" /></a>
             {% endif %}
         </div>
     </header>
@@ -38,9 +38,12 @@
         {% block main %}{% endblock %}
     </main>
 
+    <!-- footer no longer required -->
+    <!--
     <footer>
         <p>Footer content</p>
     </footer>
+    -->
 
     <div class="hidden">
         <script src="static/layout.js"></script>
