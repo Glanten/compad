@@ -21,17 +21,15 @@
             <!-- new user registration -->
             <h3>New user</h3>
             <form action="/register" method="post">
-                <div>
-                    <p>Username:
-                        <input autocomplete="off" name="username" placeholder="Username" type="text">
-                    </p>
-                </div>
-                <div>
-                    <p>Password:
-                        <input name="password" placeholder="Password" type="password">
-                        <input name="confirmation" placeholder="Repeat Password" type="password">
-                    </p>
-                </div>
+                <p>
+                    <img src="static\icon-user.svg" alt="username" />
+                    <input autocomplete="off" name="username" placeholder="Username" type="text">
+                </p>
+                <p>
+                    <img src="static\icon-lock.svg" alt="password" />
+                    <input name="password" placeholder="Password" type="password">
+                    <input name="confirmation" placeholder="Repeat Password" type="password">
+                </p>
                 <button type="submit">Register</button>
             </form>
         </div>
@@ -96,13 +94,16 @@
             <h3>New credstick</h3>
             <form action="/credstick" method="post">
                 <p>
-                    Code: <input autocomplete="off" name="credstick_code" placeholder="Code" type="text">
+                    <img src="static\icon-code.svg" alt="code" />
+                    <input autocomplete="off" name="credstick_code" placeholder="Code" type="text">
                 </p>
                 <p>
-                    Value: <input name="credstick_credits" placeholder="Credits" type="number">
+                    <img src="static\icon-money.svg" alt="value" />
+                    <input name="credstick_credits" placeholder="Credits" type="number">
                 </p>
                 <p>
-                    Message: <input name="credstick_message" placeholder="Message" type="text">
+                    <img src="static\icon-note.svg" alt="message" />
+                    <input name="credstick_message" placeholder="Message" type="text">
                 </p>
                 <button type="submit">Create</button>
             </form>
