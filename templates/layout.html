@@ -22,15 +22,15 @@
 
     {% if session['user_id'] %}
     <nav>
-        <p><a href="/">Home</a></p>
+        <a href="/" id="link_home">Home<img src="static/icon-home.svg" class="float_right" /></a>
+        <a href="/credits" id="link_credits">Credits<img src="static/icon-credits.svg" class="float_right" /></a>
+        <a href="/compad" id="link_compad">Compad<img src="static/icon-compad.svg" class="float_right" /></a>
+        <a href="/starmap" id="link_starmap">Starmap<img src="static/icon-starmap.svg" class="float_right" /></a>
+        <a href="/system" id="link_system">System<img src="static/icon-system.svg" class="float_right" /></a>
         {% if admin == 1 %}
         <!-- only show this link if user is logged in as admin -->
-        <p><a href="/admin">Admin</a></p>
+        <a href="/admin" id="link_admin">Admin<img src="static/icon-key.svg" class="float_right" /></a>
         {% endif %}
-        <p><a href="/credits">Credits</a></p>
-        <p><a href="/compad">Compad</a></p>
-        <p><a href="/starmap">Starmap</a></p>
-        <p><a href="/system">System</a></p>
     </nav>
     {% endif %}
 

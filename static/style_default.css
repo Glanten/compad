@@ -1,4 +1,5 @@
 body {
+  background-color: #392e40;
   background-image: url("darkPurple.png");
   background-repeat: repeat;
   font-family: "Courier New", Courier, monospace;
@@ -33,17 +34,48 @@ footer {
   background-color: rgba(0, 0, 0, 0.33);
   text-align: center;
   padding: 20px;
+  z-index: -1;
 }
 
+/* dynamic navbar */
 nav {
-  width: 150px;
-  position: fixed;
   z-index: 1;
-  top: 75px;
-  left: 10px;
+}
+
+nav a {
+  position: absolute;
+  left: -100px;
+  transition: 0.3s;
+  padding: 15px;
+  width: 130px;
+  text-decoration: none;
+  font-size: 20px;
+  color: #ffffff;
+  /*  border-radius: 0 5px 5px 0; /* rounded corners on top- and bottom-right sides*/
   background-color: rgba(0, 0, 0, 0.33);
-  overflow-x: hidden;
-  padding: 8px;
+}
+
+nav a:hover {
+  left: 0; /* pop out on mouse-over */
+}
+#link_home {
+  top: 75px;
+}
+#link_credits {
+  top: 135px;
+}
+#link_compad {
+  top: 195px;
+}
+#link_starmap {
+  top: 255px;
+}
+#link_system {
+  top: 315px;
+}
+#link_admin {
+  top: 375px;
+  background-color: rgba(255, 251, 0, 0.33);
 }
 
 /* ++++++++++++++++++++++++++++++++ */
