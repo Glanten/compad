@@ -121,7 +121,7 @@ a {
 }
 
 /* table of users in admin page */
-.admin_table {
+.dark_table {
   border: none;
   border-spacing: 0px;
   width: 100%;
@@ -130,10 +130,10 @@ a {
   text-align: left;
 }
 
-.admin_table td {
+.dark_table td {
   padding: 10px;
 }
 
-.admin_table tbody tr:hover {
+.dark_table tbody tr:hover {
   background-color: rgba(0, 0, 0, 0.33);
 }

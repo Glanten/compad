@@ -147,8 +147,16 @@ def admin():
 @app.route("/credits")
 @login_required
 def credits():
-    """Show user's credits"""
+    """Show user's credits, financial history, and allow sending/receiving of credits"""
+    # create variable to hold user's current balance
     credits_balance = db.execute("SELECT credits FROM users WHERE id = ?", session["user_id"])[0]["credits"]
+    
+    # function here to compile financial history from database
+
+    # function here to send credits (to a PC or NPC in your campaign); add to financial history table
+
+    # function here to take credits from a credstick; add to financial history table
+
     return render_template("credits.html", credits_balance=credits_balance)
 
 # create new credstick

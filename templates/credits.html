@@ -9,8 +9,23 @@
 
 <h1>Credits</h1>
 
+<h2>Balance</h2>
 <p>You have {{ credits_balance }} credits.</p>
 
-<p>UNDER CONSTRUCTION</p>
+<h2>Financial History</h2>
+
+<table class="dark_table">
+    <thead>
+        <tr>
+            <th>SENDER</th>
+            <th>RECEIVER</th>
+            <th>CREDITS</th>
+            <th>MESSAGE</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- loop through the database entries to create financial history table -->
+    </tbody>
+</table>
 
 {% endblock %}
