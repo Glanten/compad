@@ -4,8 +4,6 @@ from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from helpers import login_required
-# from pymongo.mongo_client import MongoClient
-# from pymongo.server_api import ServerApi
 
 app = Flask(__name__)
 
@@ -16,6 +14,12 @@ Session(app)
 
 # +++ Database and SQL +++
 db = SQL("sqlite:///compad.db")
+
+# insert admin status as argument/variable to every page
+@app.context_processor
+def inject_admin_status():
+    admin_status = session.get("admin", 0)
+    return dict(admin=admin_status)
 
 
 # Can't remember what this does...?
@@ -39,6 +43,7 @@ def index():
 
 # register a new user
 @app.route("/register", methods=["GET", "POST"])
+@login_required
 def register():
     """Register a new user (intended for initial setup only)"""
     if request.method == "POST":
@@ -69,12 +74,12 @@ def register():
                 request.form.get("password"), method='scrypt', salt_length=16)
             db.execute("INSERT INTO users (username, hash) VALUES(?, ?)",
                        submitted_username, hashed_password)
-            return render_template("login.html")
+            return redirect("/admin")
         
     else:
     # user arrived by GET (i.e. typed in URL or via link) instead of POST, display registration page
     # send user to appropriate web page
-        return render_template("register.html")
+        return redirect("/admin")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -103,7 +108,9 @@ def login():
             return render_template("error.html", error_message="incorrect username or password")
 
         # Remember which user has logged in
+        # Remember privilege level of logged in user (0 = user, 1 = admin)
         session["user_id"] = rows[0]["id"]
+        session["admin"] = rows[0]["admin"]
 
         # If all went well, redirect user to home page
         return redirect("/")
@@ -125,9 +132,14 @@ def logout():
 @login_required
 def admin():
     """Show all users, their credits, and their admin status"""
-    user_list = db.execute("SELECT username, credits, admin FROM users")
-    
-    return render_template("admin.html", user_list=user_list)
+    # check if session's admin attribute is valid (0 = user, 1 = admin)
+    if session.get("admin") != 1:
+        # if user is not admin, send them to error page
+        return render_template("error.html", error_message="administrator access only")
+    else:
+        # if user is admin, get list of users and send them to admin page
+        user_list = db.execute("SELECT username, credits, admin FROM users")
+        return render_template("admin.html", user_list=user_list)
 
 @app.route("/credits")
 @login_required
@@ -137,14 +149,17 @@ def credits():
     return render_template("credits.html", credits_balance=credits_balance)
 
 @app.route("/system")
+@login_required
 def system():
     return render_template("system.html")
 
 @app.route("/starmap")
+@login_required
 def starmap():
     return render_template("starmap.html")
 
 @app.route("/compad")
+@login_required
 def compad():
     return render_template("compad.html")
 

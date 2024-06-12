@@ -2,7 +2,7 @@ body {
   background-image: url("darkPurple.png");
   background-repeat: repeat;
   font-family: "Courier New", Courier, monospace;
-  color: white;
+  color: #f3f3f3;
 }
 
 /* main sections' styling */
@@ -36,12 +36,62 @@ footer {
 }
 
 nav {
+  width: 150px;
+  position: fixed;
+  z-index: 1;
+  top: 75px;
+  left: 10px;
+  background-color: rgba(0, 0, 0, 0.33);
+  overflow-x: hidden;
+  padding: 8px;
+}
+
+/* ++++++++++++++++++++++++++++++++ */
+/* individual element styles */
+
+/* anything that should be hidden */
+.hidden {
+  display: none;
   visibility: hidden;
 }
 
-/* individual element styles */
+/* hyperlinks */
 a {
   text-decoration: none;
   color: white;
   font-weight: bold;
+}
+
+/* anything that should float to the right */
+.float_right {
+  float: right;
+}
+
+/* anything that should appear "clickable" */
+.cursor_pointer {
+  cursor: pointer;
+}
+
+/* collapsible "accordion" segments */
+.collapsible {
+  overflow: hidden;
+  display: none;
+}
+
+/* table of users in admin page */
+#admin_users_table {
+  border: none;
+  border-spacing: 0px;
+  width: 100%;
+  background-color: rgba(0, 0, 0, 0.33);
+  padding: 10px;
+  text-align: left;
+}
+
+#admin_users_table td {
+  padding: 10px;
+}
+
+#admin_users_table tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.66);
 }

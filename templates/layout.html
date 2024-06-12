@@ -5,6 +5,7 @@
     <meta name="viewport" content="initial-scale=1, width=device-width">
     <link href="static\style_default.css" rel="stylesheet">
     <title>Compad | {% block page_title %}{% endblock %}</title>
+
     {% block head_block %}{% endblock %}
 </head>
 
@@ -13,13 +14,25 @@
     <header>
         <div style="display: inline-block;">
             <span>Header content</span>
+            {% if session['user_id'] %}
             <span><a href="/logout">Logout</a></span>
+            {% endif %}
         </div>
     </header>
 
+    {% if session['user_id'] %}
     <nav>
-        <p>Nav content</p>
+        <p><a href="/">Home</a></p>
+        {% if admin == 1 %}
+        <!-- only show this link if user is logged in as admin -->
+        <p><a href="/admin">Admin</a></p>
+        {% endif %}
+        <p><a href="/credits">Credits</a></p>
+        <p><a href="/compad">Compad</a></p>
+        <p><a href="/starmap">Starmap</a></p>
+        <p><a href="/system">System</a></p>
     </nav>
+    {% endif %}
 
     <main>
         {% block main %}{% endblock %}
@@ -28,6 +41,10 @@
     <footer>
         <p>Footer content</p>
     </footer>
+
+    <div class="hidden">
+        <script src="static/layout.js"></script>
+    </div>
 
 </body>
 
