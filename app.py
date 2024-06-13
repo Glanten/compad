@@ -77,8 +77,7 @@ def register():
             return redirect("/admin")
         
     else:
-    # user arrived by GET (i.e. typed in URL or via link) instead of POST, display registration page
-    # send user to appropriate web page
+    # user arrived by GET (i.e. typed in URL or via link) instead of POST, take them to admin page
         return redirect("/admin")
 
 @app.route("/login", methods=["GET", "POST"])
@@ -150,30 +149,71 @@ def credits():
     """Show user's credits, financial history, and allow sending/receiving of credits"""
     # create variable to hold user's current balance
     credits_balance = db.execute("SELECT credits FROM users WHERE id = ?", session["user_id"])[0]["credits"]
+
+    # create list of available users to send to
+    user_campaign = db.execute("SELECT campaign FROM users WHERE id = ?", session['user_id'])[0]['campaign']
+    send_list = db.execute("SELECT username FROM users WHERE campaign = ?", user_campaign)
     
     # function here to compile financial history from database
+    current_username = db.execute("SELECT username FROM users WHERE id = ?", session['user_id'])[0]['username']
+    finance_history = db.execute("SELECT * FROM financehistory WHERE isfrom = ? OR isto = ? ORDER BY id", current_username, current_username)
 
-    # function here to send credits (to a PC or NPC in your campaign); add to financial history table
+    return render_template("credits.html", credits_balance=credits_balance, send_list=send_list, finance_history=finance_history)
 
-    # function here to take credits from a credstick; add to financial history table
-
-    return render_template("credits.html", credits_balance=credits_balance)
-
-@app.route("/credits_send")
+# send credits to NPC or other player
+@app.route("/credits_send", methods=["GET", "POST"])
 @login_required
 def credits_send():
     """Transfer credits from user balance to other user's balance"""
-    # create variables from submitted form
-    send_recipient = request.form.get("send_credits_to")
-    send_amount = int(request.form.get("send_credits_amount"))
-    send_message = request.form.get("send_credits_note")
-    # check values
+    if request.method == "POST":
+        # if user hits "send" on 'send credits' form
+        # create variables from submitted form
+        send_user = db.execute("SELECT username FROM users WHERE id = ?", session['user_id'])[0]['username']
+        send_recipient = request.form.get("send_credits_to")
+        send_amount = int(request.form.get("send_credits_amount"))
+        send_message = request.form.get("send_credits_note")
+        
+        # check values
+        # serverside value error checking
+        if not request.form.get("send_credits_to"):
+            return render_template("error.html", error_message="you must select a recipient to send credits to")
+        if not request.form.get("send_credits_amount"):
+            return render_template("error.html", error_message="you must select an appropriate amount of credits to send")
+        if not request.form.get("send_credits_note"):
+            return render_template("error.html", error_message="please include a message when sending credits, this helps the sender and receiver identify the transaction")
+        
+        # match recipient on form with recipient in database, use id to select
+        if send_recipient != "NPC":
+            database_recipient = db.execute("SELECT id FROM users WHERE username = ?", send_recipient)
+            if not database_recipient:
+                return render_template("error.html", error_message="no such recipient found in database")
+        
+        # check user has enough credits to send
+        user_current_balance = int(db.execute("SELECT credits FROM users WHERE id = ?", session["user_id"])[0]['credits'])
+        if user_current_balance < send_amount:
+            return render_template("error.html", error_message="you do not have enough credits to send")
 
-    # send credits (update sender's and receiver's user tables)
+        # update sender's balance
+        user_new_balance = user_current_balance - send_amount
+        db.execute(
+            "UPDATE users SET credits = ? WHERE id = ?", user_new_balance, session["user_id"]
+        )
+        # update recipient's balance
+        if send_recipient != "NPC":
+            recipient_id = db.execute("SELECT id FROM users WHERE username = ?", send_recipient)[0]['id']
+            recipient_current_balance = int(db.execute("SELECT credits FROM users WHERE id = ?", recipient_id)[0]['credits'])
+            recipient_new_balance = recipient_current_balance + send_amount
+            db.execute("UPDATE users SET credits = ? WHERE id = ?", recipient_new_balance, recipient_id)
 
-    # update financialhistory table appropriately
+        # update financialhistory table appropriately
+        db.execute(
+            "INSERT INTO financehistory (isfrom, isto, value, message) VALUES (?, ?, ?, ?)", send_user, send_recipient, send_amount, send_message
+            )
+        return redirect("/credits")
 
-    return redirect("/credits")
+    else:
+        # user arrived by GET (i.e. via link or typed URL), send them to credits page
+        return redirect("/credits")
 
 # create new credstick
 @app.route("/credstick", methods=["GET", "POST"])

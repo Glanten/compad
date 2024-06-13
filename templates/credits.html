@@ -15,7 +15,7 @@
 
 <!-- send/spend credits -->
 <h2>Send Credits</h2>
-<form action="/credits_send">
+<form action="/credits_send" method="post">
     <fieldset>
         <legend>
             Who do you wish to send credits to?
@@ -25,11 +25,12 @@
                 Recipient
             </label>
             <select name="send_credits_to">
-                <option value="" disabled="disabled" selected></option>
-                <!-- populate this with jinja for every character in same campaign -->
-                <option value="person_one">person one</option>
-                <option value="person_two">person two</option>
-                <!-- add option to send to NPC or shop -->
+                <!-- option to send to NPC or shop -->
+                <option value="NPC" selected>NPC or shop</option>
+                <!-- populate with jinja for every character in same campaign -->
+                {% for person in send_list %}
+                <option value="{{ person.username }}">{{ person.username }}</option>
+                {% endfor %}
             </select>
         </div>
         <div class="send_credits_div">
@@ -66,6 +67,14 @@
     </thead>
     <tbody>
         <!-- loop through the database entries to create financial history table -->
+        {% for line in finance_history %}
+        <tr>
+            <td>{{ line.isfrom }}</td>
+            <td>{{ line.isto }}</td>
+            <td>{{ line.value }}</td>
+            <td>{{ line.message }}</td>
+        </tr>
+        {% endfor %}
     </tbody>
 </table>
 
