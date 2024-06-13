@@ -9,9 +9,50 @@
 
 <h1>Credits</h1>
 
+<!-- balance -->
 <h2>Balance</h2>
 <p>You have {{ credits_balance }} credits.</p>
 
+<!-- send/spend credits -->
+<h2>Send Credits</h2>
+<form action="/credits_send">
+    <fieldset>
+        <legend>
+            Who do you wish to send credits to?
+        </legend>
+        <div class="send_credits_div">
+            <label>
+                Recipient
+            </label>
+            <select name="send_credits_to">
+                <option value="" disabled="disabled" selected></option>
+                <!-- populate this with jinja for every character in same campaign -->
+                <option value="person_one">person one</option>
+                <option value="person_two">person two</option>
+                <!-- add option to send to NPC or shop -->
+            </select>
+        </div>
+        <div class="send_credits_div">
+            <label>
+                Credits
+            </label>
+            <input type="number" name="send_credits_amount" min="1" value="0" />
+        </div>
+        <div class="send_credits_div">
+            <label>
+                Message
+            </label>
+            <input type="text" name="send_credits_note" />
+        </div>
+        <div class="send_credits_div">
+            <button type="submit">Send</button>
+        </div>
+    </fieldset>
+</form>
+
+<!-- use credstick -->
+
+<!-- financial history-->
 <h2>Financial History</h2>
 
 <table class="dark_table">

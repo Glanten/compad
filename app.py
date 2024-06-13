@@ -159,6 +159,22 @@ def credits():
 
     return render_template("credits.html", credits_balance=credits_balance)
 
+@app.route("/credits_send")
+@login_required
+def credits_send():
+    """Transfer credits from user balance to other user's balance"""
+    # create variables from submitted form
+    send_recipient = request.form.get("send_credits_to")
+    send_amount = int(request.form.get("send_credits_amount"))
+    send_message = request.form.get("send_credits_note")
+    # check values
+
+    # send credits (update sender's and receiver's user tables)
+
+    # update financialhistory table appropriately
+
+    return redirect("/credits")
+
 # create new credstick
 @app.route("/credstick", methods=["GET", "POST"])
 @login_required

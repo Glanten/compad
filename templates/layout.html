@@ -12,10 +12,10 @@
 <body>
 
     <header>
-        <div style="display: inline-block;">
-            Header content
+        <div>
+            <!--<span>Header content</span>-->
             {% if session['user_id'] %}
-            <a href="/logout"><img src="static/icon-logout.svg" alt="log out" class="float_right" /></a>
+            <a href="/logout" class="float_right"><img src="static/icon-logout.svg" alt="log out" /></a>
             {% endif %}
         </div>
     </header>
