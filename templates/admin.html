@@ -77,11 +77,20 @@
                         {{ entry.credits }}
                     </td>
                     <td>
-                        <button>Edit user</button>
+                        <form style="display: inline;">
+                            <button type="submit" class="cursor_pointer" style="border: none; background: none;">
+                                <img src="static\icon-edit.svg" alt="edit" />
+                            </button>
+                        </form>
                     </td>
                     <td>
                         {% if entry.admin != 1 %}
-                        <a href=""><img src="static\icon-bin.svg" /></a>
+                        <form action="{{ url_for('remove_user', user_id=entry.id)}}" method="POST"
+                            style="display: inline;">
+                            <button type="submit" class="cursor_pointer" style="border: none; background: none;">
+                                <img src="static\icon-bin.svg" alt="delete" />
+                            </button>
+                        </form>
                         {% endif %}
                     </td>
                 </tr>
@@ -159,8 +168,8 @@
                     <td>
                         <form action="{{ url_for('remove_credstick', credstick_id=stick.id)}}" method="POST"
                             style="display: inline;">
-                            <button type="submit" style="border: none; background: none;">
-                                <img src="static\icon-bin.svg" />
+                            <button type="submit" class="cursor_pointer" style="border: none; background: none;">
+                                <img src="static\icon-bin.svg" alt="delete" />
                             </button>
                         </form>
                     </td>

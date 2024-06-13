@@ -139,7 +139,7 @@ def admin():
     
     # if user is admin...
     # get list of users and send them to admin page
-    user_list = db.execute("SELECT username, credits, admin, campaign FROM users ORDER BY id")
+    user_list = db.execute("SELECT * FROM users ORDER BY id")
     # get list of credstick and send them to admin page
     credsticks_list = db.execute("SELECT * FROM credsticks ORDER BY id")
     return render_template("admin.html", user_list=user_list, credsticks_list=credsticks_list)
@@ -312,12 +312,20 @@ def credstick():
     # send user to appropriate web page
         return redirect("/admin")
     
-@app.route("/remove/<int:credstick_id>", methods=['POST'])
+@app.route("/remove_credstick/<int:credstick_id>", methods=['POST'])
 @login_required
 def remove_credstick(credstick_id):
     """Delete credstick entry from database"""
     # remove entry from database according to submitted id
     db.execute("DELETE FROM credsticks WHERE id = ?", credstick_id)
+    return redirect("/admin")
+
+@app.route("/remove_user/<int:user_id>", methods=['POST'])
+@login_required
+def remove_user(user_id):
+    """Delete user entry from database"""
+    # remove entry from database according to submitted id
+    db.execute("DELETE FROM users WHERE id = ?", user_id)
     return redirect("/admin")
 
 @app.route("/system")
