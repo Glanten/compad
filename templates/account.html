@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+
+{% block head_block %}
+{% endblock %}
+
+{% block page_title %}Account{% endblock %}
+
+{% block main %}
+
+<h1>Account</h1>
+
+<form action="/account" method="post">
+    <fieldset>
+        <legend>
+            <h2>
+                Change password
+            </h2>
+        </legend>
+
+        <p>
+            Old password:
+            <input name="old_password" placeholder="Old password" type="password">
+        </p>
+
+
+        <p>New password:
+            <input name="new_password" placeholder="New password" type="password">
+            <input name="confirmation" placeholder="Repeat new password" type="password">
+        </p>
+
+        <button type="submit">Change Password</button>
+    </fieldset>
+</form>
+
+{% endblock %}

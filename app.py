@@ -384,6 +384,35 @@ def starmap():
 def compad():
     return render_template("compad.html")
 
+@app.route("/account", methods=['GET', 'POST'])
+@login_required
+def account():
+    """Permit changes to logged-in user's account """
+    if request.method == 'POST':
+        # check to see if current password was submitted
+        if not request.form.get("old_password"):
+            return render_template("error.html", error_message="current password not provided")
+        
+        # check to see if new password was submitted
+        if not request.form.get("new_password"):
+            return render_template("error.html", error_message="new password not provided")
+        
+        # ensure new password and confirmation password match
+        if request.form.get("new_password") != request.form.get("confirmation"):
+            return render_template("error.html", error_message="passwords do not match")
+        
+        # check to see if old password is correct
+        current_user = db.execute("SELECT * FROM users WHERE id = ?", session['user_id'])
+        if not check_password_hash(current_user[0]['hash'], request.form.get("old_password")):
+            return render_template("error.html", error_message="current password incorrect")
+        
+        # otherwise, update the user
+        new_password = generate_password_hash(request.form.get("new_password"), method='scrypt', salt_length=16)
+        db.execute("UPDATE users SET hash = ? WHERE id = ?", new_password, session['user_id'])
+        return redirect("/")
+    else:
+        return render_template("account.html")
+
 # Error page
 @app.errorhandler(404)
 def notfound(e):

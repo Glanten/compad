@@ -13,10 +13,11 @@
 
     <header>
         <div>
-            <!--<span>Header content</span>-->
             {% if session['user_id'] %}
             <a href="/logout" class="float_right"><img src="{{ url_for('static', filename='icon-logout.svg') }}" alt="
                     log out" /></a>
+            <a href="/account" class="float_right"><img src="{{ url_for('static', filename='icon-settings.svg') }}" alt="
+                account settings" /></a>
             {% endif %}
         </div>
     </header>
