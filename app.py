@@ -152,7 +152,7 @@ def credits():
 
     # create list of available users to send to
     user_campaign = db.execute("SELECT campaign FROM users WHERE id = ?", session['user_id'])[0]['campaign']
-    send_list = db.execute("SELECT username FROM users WHERE campaign = ?", user_campaign)
+    send_list = db.execute("SELECT id, username FROM users WHERE campaign = ? AND NOT id = ?", user_campaign, session['user_id'])
     
     # function here to compile financial history from database
     current_username = db.execute("SELECT username FROM users WHERE id = ?", session['user_id'])[0]['username']
@@ -181,12 +181,18 @@ def credits_send():
             return render_template("error.html", error_message="you must select an appropriate amount of credits to send")
         if not request.form.get("send_credits_note"):
             return render_template("error.html", error_message="please include a message when sending credits, this helps the sender and receiver identify the transaction")
+        if send_amount < 1:
+            return render_template("error.html", error_message="cannot send zero or negative-value credits")
         
         # match recipient on form with recipient in database, use id to select
         if send_recipient != "NPC":
             database_recipient = db.execute("SELECT id FROM users WHERE username = ?", send_recipient)
             if not database_recipient:
                 return render_template("error.html", error_message="no such recipient found in database")
+            
+            database_recipient_id = db.execute("SELECT id FROM users WHERE username = ?", send_recipient)[0]['id']
+            if database_recipient_id == session['user_id']:
+                return render_template("error.html", error_message="cannot send credits to self")
         
         # check user has enough credits to send
         user_current_balance = int(db.execute("SELECT credits FROM users WHERE id = ?", session["user_id"])[0]['credits'])
@@ -195,15 +201,12 @@ def credits_send():
 
         # update sender's balance
         user_new_balance = user_current_balance - send_amount
-        db.execute(
-            "UPDATE users SET credits = ? WHERE id = ?", user_new_balance, session["user_id"]
-        )
+        db.execute("UPDATE users SET credits = ? WHERE id = ?", user_new_balance, session["user_id"])
         # update recipient's balance
         if send_recipient != "NPC":
-            recipient_id = db.execute("SELECT id FROM users WHERE username = ?", send_recipient)[0]['id']
-            recipient_current_balance = int(db.execute("SELECT credits FROM users WHERE id = ?", recipient_id)[0]['credits'])
+            recipient_current_balance = int(db.execute("SELECT credits FROM users WHERE id = ?", database_recipient_id)[0]['credits'])
             recipient_new_balance = recipient_current_balance + send_amount
-            db.execute("UPDATE users SET credits = ? WHERE id = ?", recipient_new_balance, recipient_id)
+            db.execute("UPDATE users SET credits = ? WHERE id = ?", recipient_new_balance, database_recipient_id)
 
         # update financialhistory table appropriately
         db.execute(
