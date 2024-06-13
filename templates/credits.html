@@ -14,13 +14,12 @@
 <p>You have {{ credits_balance }} credits.</p>
 
 <!-- send/spend credits -->
-<h2>Send Credits</h2>
 <form action="/credits_send" method="post">
     <fieldset>
         <legend>
-            Who do you wish to send credits to?
+            <h2>Send credits</h2>
         </legend>
-        <div class="send_credits_div">
+        <p>
             <label>
                 Recipient
             </label>
@@ -32,26 +31,44 @@
                 <option value="{{ person.username }}">{{ person.username }}</option>
                 {% endfor %}
             </select>
-        </div>
-        <div class="send_credits_div">
+        </p>
+        <p>
             <label>
                 Credits
             </label>
             <input type="number" name="send_credits_amount" min="1" value="0" />
-        </div>
-        <div class="send_credits_div">
+        </p>
+        <p>
             <label>
                 Message
             </label>
             <input type="text" name="send_credits_note" />
-        </div>
-        <div class="send_credits_div">
+        </p>
+        <div>
             <button type="submit">Send</button>
         </div>
     </fieldset>
 </form>
 
 <!-- use credstick -->
+<form action="/credits_receive" method="post">
+    <fieldset>
+        <legend>
+            <h2>Use credstick code</h2>
+        </legend>
+        <div>
+            <p>
+                <label>
+                    Code
+                </label>
+                <input type="text" name="input_credstick_code" />
+            </p>
+            <div>
+                <button type="submit">Withdraw</button>
+            </div>
+        </div>
+    </fieldset>
+</form>
 
 <!-- financial history-->
 <h2>Financial History</h2>

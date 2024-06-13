@@ -1,6 +1,12 @@
 {% extends "layout.html" %}
 
 {% block head_block %}
+<style>
+    h2 {
+        margin-top: 0px;
+        margin-bottom: 0px;
+    }
+</style>
 {% endblock %}
 
 {% block page_title %}Admin{% endblock %}
@@ -19,18 +25,22 @@
 
         <div>
             <!-- new user registration -->
-            <h3>New user</h3>
             <form action="/register" method="post">
-                <p>
-                    <img src="static\icon-user.svg" alt="username" />
-                    <input autocomplete="off" name="username" placeholder="Username" type="text">
-                </p>
-                <p>
-                    <img src="static\icon-lock.svg" alt="password" />
-                    <input name="password" placeholder="Password" type="password">
-                    <input name="confirmation" placeholder="Repeat Password" type="password">
-                </p>
-                <button type="submit">Register</button>
+                <fieldset>
+                    <legend>
+                        <h3>Create new user</h3>
+                    </legend>
+                    <p>
+                        <img src="static\icon-user.svg" alt="username" />
+                        <input autocomplete="off" name="username" placeholder="Username" type="text">
+                    </p>
+                    <p>
+                        <img src="static\icon-lock.svg" alt="password" />
+                        <input name="password" placeholder="Password" type="password">
+                        <input name="confirmation" placeholder="Repeat Password" type="password">
+                    </p>
+                    <button type="submit">Register</button>
+                </fieldset>
             </form>
         </div>
 
@@ -67,7 +77,7 @@
                         {{ entry.credits }}
                     </td>
                     <td>
-                        <button>Change password</button>
+                        <button>Edit user</button>
                     </td>
                     <td>
                         {% if entry.admin != 1 %}
@@ -91,21 +101,25 @@
 
         <div>
             <!-- new credstick creation -->
-            <h3>New credstick</h3>
             <form action="/credstick" method="post">
-                <p>
-                    <img src="static\icon-code.svg" alt="code" />
-                    <input autocomplete="off" name="credstick_code" placeholder="Code" type="text">
-                </p>
-                <p>
-                    <img src="static\icon-money.svg" alt="value" />
-                    <input name="credstick_credits" placeholder="Credits" type="number">
-                </p>
-                <p>
-                    <img src="static\icon-note.svg" alt="message" />
-                    <input name="credstick_message" placeholder="Message" type="text">
-                </p>
-                <button type="submit">Create</button>
+                <fieldset>
+                    <legend>
+                        <h3>New credstick</h3>
+                    </legend>
+                    <p>
+                        <img src="static\icon-code.svg" alt="code" />
+                        <input autocomplete="off" name="credstick_code" placeholder="Code" type="text">
+                    </p>
+                    <p>
+                        <img src="static\icon-money.svg" alt="value" />
+                        <input name="credstick_credits" placeholder="Credits" type="number">
+                    </p>
+                    <p>
+                        <img src="static\icon-note.svg" alt="message" />
+                        <input name="credstick_message" placeholder="Message" type="text">
+                    </p>
+                    <button type="submit">Create</button>
+                </fieldset>
             </form>
         </div>
 

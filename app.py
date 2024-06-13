@@ -215,6 +215,54 @@ def credits_send():
         # user arrived by GET (i.e. via link or typed URL), send them to credits page
         return redirect("/credits")
 
+# acquire credits from a credstick code
+@app.route("/credits_receive", methods=["GET", "POST"])
+@login_required
+def credits_receive():
+    """Acquire credits from a unique credstick code"""
+    if request.method == "POST":
+        # if user hits "send" on 'send credits' form
+        # create variables from submitted form
+        receive_code = request.form.get("input_credstick_code")
+
+        # check values
+        if not request.form.get("input_credstick_code"):
+            return render_template("error.html", error_message="no credstick code detected")
+        
+        # match input credstick code with database
+        database_credstick = db.execute("SELECT * FROM credsticks WHERE code = ?", receive_code)
+        if not database_credstick:
+            return render_template("error.html", error_message="invalid credstick code")
+        
+        # check code is active (i.e. not yet redeemed)
+        if int(database_credstick[0]['state']) != 0:
+            return render_template("error.html", error_message="credstick already redeemed")
+        
+        # update user's balance
+        user_current_balance = int(db.execute("SELECT credits FROM users WHERE id = ?", session["user_id"])[0]['credits'])
+        credstick_value = int(db.execute("SELECT credits FROM credsticks WHERE code = ?", receive_code)[0]['credits'])
+        credstick_message = db.execute("SELECT message FROM credsticks WHERE code = ?", receive_code)[0]['message']
+        user_new_balance = user_current_balance + credstick_value
+
+        db.execute(
+            "UPDATE users SET credits = ? WHERE id = ?", user_new_balance, session['user_id']
+            )
+
+        # update credstick's state to 'redeemed' (i.e. 0 = valid, 1 = redeemed)
+        db.execute("UPDATE credsticks SET state = 1 WHERE code = ?", receive_code)
+
+        # update financehistory accordingly
+        recipient_username = db.execute("SELECT username FROM users WHERE id = ?", session['user_id'])[0]['username']
+        db.execute(
+            "INSERT INTO financehistory (isfrom, isto, value, message) VALUES ('NPC', ?, ?, ?)", recipient_username, credstick_value, credstick_message
+            )
+
+        return redirect("/credits")
+    
+    else:
+        # user arrived by GET (i.e. via link or typed URL), send them to credits page
+        return redirect("/credits")
+
 # create new credstick
 @app.route("/credstick", methods=["GET", "POST"])
 @login_required
