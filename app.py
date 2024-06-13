@@ -32,8 +32,9 @@ def after_request(response):
     return response
 
 
-# ++++++++++++++++++++++++++++++++++++++++++++++
-# +++ Flask and Webpages +++
+#++++++++++++++++++++++++++#
+#+++ Flask and Webpages +++#
+#++++++++++++++++++++++++++#
 
 # Main pages
 @app.route("/")
@@ -140,7 +141,7 @@ def admin():
     # get list of users and send them to admin page
     user_list = db.execute("SELECT username, credits, admin, campaign FROM users ORDER BY id")
     # get list of credstick and send them to admin page
-    credsticks_list = db.execute("SELECT code, credits, state, message FROM credsticks ORDER BY id")
+    credsticks_list = db.execute("SELECT * FROM credsticks ORDER BY id")
     return render_template("admin.html", user_list=user_list, credsticks_list=credsticks_list)
 
 @app.route("/credits")
@@ -152,7 +153,7 @@ def credits():
 
     # create list of available users to send to
     user_campaign = db.execute("SELECT campaign FROM users WHERE id = ?", session['user_id'])[0]['campaign']
-    send_list = db.execute("SELECT id, username FROM users WHERE campaign = ? AND NOT id = ?", user_campaign, session['user_id'])
+    send_list = db.execute("SELECT username FROM users WHERE campaign = ? AND NOT id = ?", user_campaign, session['user_id'])
     
     # function here to compile financial history from database
     current_username = db.execute("SELECT username FROM users WHERE id = ?", session['user_id'])[0]['username']
@@ -189,6 +190,11 @@ def credits_send():
             database_recipient = db.execute("SELECT id FROM users WHERE username = ?", send_recipient)
             if not database_recipient:
                 return render_template("error.html", error_message="no such recipient found in database")
+            
+            recipient_campaign = db.execute("SELECT campaign FROM users WHERE username = ?", send_recipient)
+            user_campaign = db.execute("SELECT campaign FROM users WHERE id = ?", session['user_id'])
+            if recipient_campaign != user_campaign:
+                return render_template("error.html", error_message="users not in same campaign")
             
             database_recipient_id = db.execute("SELECT id FROM users WHERE username = ?", send_recipient)[0]['id']
             if database_recipient_id == session['user_id']:
@@ -305,6 +311,14 @@ def credstick():
     # user arrived by GET (i.e. typed in URL or via link) instead of POST, display registration page
     # send user to appropriate web page
         return redirect("/admin")
+    
+@app.route("/remove/<int:credstick_id>", methods=['POST'])
+@login_required
+def remove_credstick(credstick_id):
+    """Delete credstick entry from database"""
+    # remove entry from database according to submitted id
+    db.execute("DELETE FROM credsticks WHERE id = ?", credstick_id)
+    return redirect("/admin")
 
 @app.route("/system")
 @login_required

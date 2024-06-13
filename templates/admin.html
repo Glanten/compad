@@ -92,6 +92,8 @@
     </div>
 </div>
 
+<!-- +++++++++++++++++++++++++++++++++++ -->
+<!-- CREDSTICKS -->
 <div class="darker">
     <h2 class="cursor_pointer" onclick="collapseSegment('admin_credits', 'admin_credits_expand')">
         Credits
@@ -155,7 +157,12 @@
                         {% endif %}
                     </td>
                     <td>
-                        <a href=""><img src="static\icon-bin.svg" /></a>
+                        <form action="{{ url_for('remove_credstick', credstick_id=stick.id)}}" method="POST"
+                            style="display: inline;">
+                            <button type="submit" style="border: none; background: none;">
+                                <img src="static\icon-bin.svg" />
+                            </button>
+                        </form>
                     </td>
                 </tr>
                 {% endfor %}

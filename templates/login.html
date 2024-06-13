@@ -7,16 +7,22 @@
 
 {% block main %}
 
-<h1>COMPAD</h1>
+<div style="text-align: center;">
+    <h1>COMPAD</h1>
 
-<form action="/login" method="post">
-    <div>
-        <input autocomplete="off" autofocus name="username" placeholder="Username" type="text" />
-    </div>
-    <div>
-        <input name="password" placeholder="Password" type="password">
-    </div>
-    <button type="submit">Login</button>
-</form>
+    <form action="/login" method="post">
+        <p>
+        <div>
+            <input autocomplete="off" autofocus name="username" placeholder="Username" type="text" />
+        </div>
+        </p>
+        <p>
+        <div>
+            <input name="password" placeholder="Password" type="password">
+        </div>
+        </p>
+        <button type="submit">Login</button>
+    </form>
+</div>
 
 {% endblock %}
