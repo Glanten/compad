@@ -3,7 +3,7 @@
 
 <head>
     <meta name="viewport" content="initial-scale=1, width=device-width">
-    <link href="static\style_default.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='style_default.css') }}" rel="stylesheet">
     <title>Compad | {% block page_title %}{% endblock %}</title>
 
     {% block head_block %}{% endblock %}
@@ -15,21 +15,39 @@
         <div>
             <!--<span>Header content</span>-->
             {% if session['user_id'] %}
-            <a href="/logout" class="float_right"><img src="static/icon-logout.svg" alt="log out" /></a>
+            <a href="/logout" class="float_right"><img src="{{ url_for('static', filename='icon-logout.svg') }}" alt="
+                    log out" /></a>
             {% endif %}
         </div>
     </header>
 
     {% if session['user_id'] %}
     <nav>
-        <a href="/" id="link_home">Home<img src="static/icon-home.svg" class="float_right" /></a>
-        <a href="/credits" id="link_credits">Credits<img src="static/icon-credits.svg" class="float_right" /></a>
-        <a href="/compad" id="link_compad">Compad<img src="static/icon-compad.svg" class="float_right" /></a>
-        <a href="/starmap" id="link_starmap">Starmap<img src="static/icon-starmap.svg" class="float_right" /></a>
-        <a href="/system" id="link_system">System<img src="static/icon-system.svg" class="float_right" /></a>
+        <a href="/" id="link_home">
+            Home
+            <img src="{{ url_for('static', filename='icon-home.svg') }}" class="float_right" />
+        </a>
+        <a href="/credits" id="link_credits">
+            Credits
+            <img src="{{ url_for('static', filename='icon-credits.svg') }}" class="float_right" />
+        </a>
+        <a href="/compad" id="link_compad">
+            Compad
+            <img src="{{ url_for('static', filename='icon-compad.svg') }}" class="float_right" /></a>
+        <a href="/starmap" id="link_starmap">
+            Starmap
+            <img src="{{ url_for('static', filename='icon-starmap.svg') }}" class="float_right" />
+        </a>
+        <a href="/system" id="link_system">
+            System
+            <img src="{{ url_for('static', filename='icon-system.svg') }}" class="float_right" />
+        </a>
         {% if admin == 1 %}
         <!-- only show this link if user is logged in as admin -->
-        <a href="/admin" id="link_admin">Admin<img src="static/icon-key.svg" class="float_right" /></a>
+        <a href="/admin" id="link_admin">
+            Admin
+            <img src="{{ url_for('static', filename='icon-key.svg') }}" class="float_right" />
+        </a>
         {% endif %}
     </nav>
     {% endif %}

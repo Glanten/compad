@@ -1,0 +1,71 @@
+{% extends "layout.html" %}
+
+{% block head_block %}
+{% endblock %}
+
+{% block page_title %}Edit User: {{ edited_user.username }}{% endblock %}
+
+{% block main %}
+
+<p>
+    Details left blank will remain unchanged.
+</p>
+
+<form action="{{ url_for('edit_user', edit_user_id=edited_user.id)}}" method='POST'>
+    <fieldset>
+        <legend>
+            <h2>Edit "{{ edited_user.username }}"</h2>
+        </legend>
+        <!-- username -->
+        <p>
+            <span>
+                <img src="{{ url_for('static', filename='icon-user.svg') }}" alt="username" />
+                Username:
+            </span>
+            <input autocomplete="off" name="new_username" type="text" />
+        </p>
+
+        <!-- password -->
+        <p>
+            <span>
+                <img src="{{ url_for('static', filename='icon-lock.svg') }}" alt="password" />
+                Password:
+            </span>
+            <input autocomplete="off" name="new_password" type="password" />
+        </p>
+
+        <!-- credits -->
+        <p>
+            <span>
+                <img src="{{ url_for('static', filename='icon-money.svg') }}" alt="credits" />
+                Credits:
+            </span>
+            <input autocomplete="off" name="new_credits" type="number" min="0" />
+        </p>
+
+        <!-- campaign -->
+        <p>
+            <span>
+                <img src="{{ url_for('static', filename='icon-globe.svg') }}" alt="campaign" />
+                Campaign:
+            </span>
+            <input autocomplete="off" name="new_campaign" type="number" />
+        </p>
+
+        <!-- admin status -->
+        <p>
+            <span>
+                <img src="{{ url_for('static', filename='icon-key.svg') }}" alt="username" />
+                Admin:
+            </span><br />
+            <input type="radio" id="new_admin_status_yes" name="new_admin_status" value="1">
+            <label for="new_admin_status_yes">Yes</label><br>
+            <input type="radio" id="new_admin_status_no" name="new_admin_status" value="0">
+            <label for="new_admin_status_no">No</label><br>
+        </p>
+
+        <button type="submit">Update details</button>
+    </fieldset>
+</form>
+
+{% endblock %}

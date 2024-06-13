@@ -32,12 +32,12 @@
                     </legend>
                     <p>
                         <img src="static\icon-user.svg" alt="username" />
-                        <input autocomplete="off" name="username" placeholder="Username" type="text">
+                        <input autocomplete="off" name="username" placeholder="Username" type="text" />
                     </p>
                     <p>
                         <img src="static\icon-lock.svg" alt="password" />
-                        <input name="password" placeholder="Password" type="password">
-                        <input name="confirmation" placeholder="Repeat Password" type="password">
+                        <input name="password" placeholder="Password" type="password" />
+                        <input name="confirmation" placeholder="Repeat Password" type="password" />
                     </p>
                     <button type="submit">Register</button>
                 </fieldset>
@@ -52,8 +52,8 @@
                     <th>ADMIN?</th>
                     <th>CAMPAIGN</th>
                     <th>CREDITS</th>
-                    <th></th>
-                    <th></th>
+                    <th>EDIT</th>
+                    <th>DELETE</th>
                 </tr>
             </thead>
             <tbody>
@@ -77,7 +77,8 @@
                         {{ entry.credits }}
                     </td>
                     <td>
-                        <form style="display: inline;">
+                        <form action="{{ url_for('edit_user', edit_user_id=entry.id)}}" method="GET"
+                            style="display: inline;">
                             <button type="submit" class="cursor_pointer" style="border: none; background: none;">
                                 <img src="static\icon-edit.svg" alt="edit" />
                             </button>
@@ -85,7 +86,7 @@
                     </td>
                     <td>
                         {% if entry.admin != 1 %}
-                        <form action="{{ url_for('remove_user', user_id=entry.id)}}" method="POST"
+                        <form action="{{ url_for('remove_user', del_user_id=entry.id)}}" method="POST"
                             style="display: inline;">
                             <button type="submit" class="cursor_pointer" style="border: none; background: none;">
                                 <img src="static\icon-bin.svg" alt="delete" />

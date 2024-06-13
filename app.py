@@ -42,6 +42,73 @@ def after_request(response):
 def index():
     return render_template("index.html")
 
+@app.route("/admin")
+@login_required
+def admin():
+    """Show all users, their credits, and their admin status"""
+    # check if session's admin attribute is valid (0 = user, 1 = admin)
+    if session.get("admin") != 1:
+        # if user is not admin, send them to error page
+        return render_template("error.html", error_message="administrator access only")
+    
+    # if user is admin...
+    # get list of users and send them to admin page
+    user_list = db.execute("SELECT * FROM users ORDER BY id")
+    # get list of credstick and send them to admin page
+    credsticks_list = db.execute("SELECT * FROM credsticks ORDER BY id")
+    return render_template("admin.html", user_list=user_list, credsticks_list=credsticks_list)
+
+@app.route("/remove_user/<int:del_user_id>", methods=['POST'])
+@login_required
+def remove_user(del_user_id):
+    """Delete user entry from database"""
+    # remove entry from database according to submitted id
+    db.execute("DELETE FROM users WHERE id = ?", del_user_id)
+    return redirect("/admin")
+
+@app.route("/edit_user/<int:edit_user_id>", methods=['GET', 'POST'])
+@login_required
+def edit_user(edit_user_id):
+    """Permit admins to edit users' details"""
+    # fetch user from database
+    edited_user = db.execute("SELECT * FROM users WHERE id = ?", edit_user_id)[0]
+
+    if request.method == 'POST':
+        # check new username has been submitted
+        if request.form.get("new_username"):
+            new_username = request.form.get("new_username").lower()
+            existing_name = db.execute("SELECT * FROM users WHERE username = ?", new_username)
+            if existing_name:
+                # if <existing_name> returns anything, a record must already exist
+                return render_template("error.html", error_message="username already exists")
+            else:
+                db.execute("UPDATE users SET username = ? WHERE id = ?", new_username, edit_user_id)
+
+        if request.form.get("new_password"):
+            new_hashed_password = generate_password_hash(request.form.get("new_password"), method='scrypt', salt_length=16)
+            db.execute("UPDATE users SET hash = ? WHERE id = ?", new_hashed_password, edit_user_id)
+
+        if request.form.get("new_credits"):
+            new_credits = int(request.form.get("new_credits"))
+            db.execute("UPDATE users SET credits = ? WHERE id = ?", new_credits, edit_user_id)
+        
+        if request.form.get("new_campaign"):
+            new_campaign = int(request.form.get("new_campaign"))
+            db.execute("UPDATE users SET campaign = ? WHERE id = ?", new_campaign, edit_user_id)
+
+        if request.form.get("new_admin_status"):
+            new_admin_status = int(request.form.get("new_admin_status"))
+            if new_admin_status > 1 or new_admin_status < 0:
+                return render_template("error.html", error_message="invalid admin status input")
+            else:
+                db.execute("UPDATE users SET admin = ? WHERE id = ?", new_admin_status, edit_user_id)
+
+        return redirect("/admin")
+    
+    else:
+        # take admin to edit_user page
+        return render_template("edit_user.html", edited_user=edited_user)
+
 # register a new user
 @app.route("/register", methods=["GET", "POST"])
 @login_required
@@ -53,9 +120,7 @@ def register():
         submitted_username = request.form.get("username").lower()
 
         # query database for username match
-        existing_name = db.execute(
-            "SELECT * FROM users WHERE username = ?", submitted_username
-        )
+        existing_name = db.execute("SELECT * FROM users WHERE username = ?", submitted_username)
         if existing_name:
             # if <existing_name> returns anything, a record must already exist
             return render_template("error.html", error_message="username already exists")
@@ -127,22 +192,6 @@ def logout():
     session.clear()
     # Redirect user to login form
     return redirect("/")
-
-@app.route("/admin")
-@login_required
-def admin():
-    """Show all users, their credits, and their admin status"""
-    # check if session's admin attribute is valid (0 = user, 1 = admin)
-    if session.get("admin") != 1:
-        # if user is not admin, send them to error page
-        return render_template("error.html", error_message="administrator access only")
-    
-    # if user is admin...
-    # get list of users and send them to admin page
-    user_list = db.execute("SELECT * FROM users ORDER BY id")
-    # get list of credstick and send them to admin page
-    credsticks_list = db.execute("SELECT * FROM credsticks ORDER BY id")
-    return render_template("admin.html", user_list=user_list, credsticks_list=credsticks_list)
 
 @app.route("/credits")
 @login_required
@@ -318,14 +367,6 @@ def remove_credstick(credstick_id):
     """Delete credstick entry from database"""
     # remove entry from database according to submitted id
     db.execute("DELETE FROM credsticks WHERE id = ?", credstick_id)
-    return redirect("/admin")
-
-@app.route("/remove_user/<int:user_id>", methods=['POST'])
-@login_required
-def remove_user(user_id):
-    """Delete user entry from database"""
-    # remove entry from database according to submitted id
-    db.execute("DELETE FROM users WHERE id = ?", user_id)
     return redirect("/admin")
 
 @app.route("/system")
