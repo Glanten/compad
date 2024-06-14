@@ -129,10 +129,10 @@ a {
 /* collapsible "accordion" segments */
 .collapsible {
   overflow: hidden;
-  display: none;
+  display: block;
 }
 
-/* table of users in admin page */
+/* tables (e.g. users in admin page) */
 .dark_table {
   border: none;
   border-spacing: 0px;
@@ -150,4 +150,38 @@ a {
   background-color: rgba(0, 0, 0, 0.33);
 }
 
-/*  */
+/* saturated UI buttons */
+.ui_button,
+.warning_button {
+  padding: 8px 12px;
+  font-size: large;
+  text-align: center;
+  cursor: pointer;
+  outline: none;
+  color: #f3f3f3;
+  background-color: rgba(58, 47, 62, 1);
+  border: none;
+}
+
+.ui_button:hover {
+  background-color: rgba(83, 73, 86, 1);
+  color: #fdfdfd;
+}
+
+.warning_button:hover {
+  background-color: rgba(62, 50, 47, 1);
+  color: #fdfdfd;
+}
+
+.ui_button:active {
+  background-color: rgba(132, 125, 134, 1);
+  transform: translateY(4px);
+}
+
+/* input text boxes */
+input {
+  border: none;
+  font-size: 16px;
+  font-family: "Courier New", Courier, monospace;
+  padding: 6px;
+}

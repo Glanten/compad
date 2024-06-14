@@ -26,28 +26,28 @@
     <nav>
         <a href="/" id="link_home">
             Home
-            <img src="{{ url_for('static', filename='icon-home.svg') }}" class="float_right" />
+            <img src="{{ url_for('static', filename='icon-home.svg') }}" class="float_right" alt="homepage link" />
         </a>
         <a href="/credits" id="link_credits">
             Credits
-            <img src="{{ url_for('static', filename='icon-credits.svg') }}" class="float_right" />
+            <img src="{{ url_for('static', filename='icon-credits.svg') }}" class="float_right" alt="credits link" />
         </a>
         <a href="/compad" id="link_compad">
             Compad
-            <img src="{{ url_for('static', filename='icon-compad.svg') }}" class="float_right" /></a>
+            <img src="{{ url_for('static', filename='icon-compad.svg') }}" class="float_right" alt="compad link" /></a>
         <a href="/starmap" id="link_starmap">
             Starmap
-            <img src="{{ url_for('static', filename='icon-starmap.svg') }}" class="float_right" />
+            <img src="{{ url_for('static', filename='icon-starmap.svg') }}" class="float_right" alt="starmap link" />
         </a>
         <a href="/system" id="link_system">
             System
-            <img src="{{ url_for('static', filename='icon-system.svg') }}" class="float_right" />
+            <img src="{{ url_for('static', filename='icon-system.svg') }}" class="float_right" alt="system link" />
         </a>
         {% if admin == 1 %}
         <!-- only show this link if user is logged in as admin -->
         <a href="/admin" id="link_admin">
             Admin
-            <img src="{{ url_for('static', filename='icon-key.svg') }}" class="float_right" />
+            <img src="{{ url_for('static', filename='icon-key.svg') }}" class="float_right" alt="admin page link" />
         </a>
         {% endif %}
     </nav>
@@ -56,13 +56,6 @@
     <main>
         {% block main %}{% endblock %}
     </main>
-
-    <!-- footer no longer required -->
-    <!--
-    <footer>
-        <p>Footer content</p>
-    </footer>
-    -->
 
     <div class="hidden">
         <script src="static/layout.js"></script>

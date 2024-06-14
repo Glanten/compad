@@ -7,15 +7,14 @@
 
 {% block main %}
 
-<p>
-    Details left blank will remain unchanged.
-</p>
-
 <form action="{{ url_for('edit_user', edit_user_id=edited_user.id)}}" method='POST'>
     <fieldset>
         <legend>
             <h2>Edit "{{ edited_user.username }}"</h2>
         </legend>
+        <p>
+            Details left blank will remain unchanged.
+        </p>
         <!-- username -->
         <p>
             <span>
@@ -64,7 +63,48 @@
             <label for="new_admin_status_no">No</label><br>
         </p>
 
-        <button type="submit">Update details</button>
+        <button type="submit" class="ui_button">Update details</button>
+    </fieldset>
+</form>
+
+<!-- financial history-->
+<h2>Financial History</h2>
+
+<table class="dark_table">
+    <thead>
+        <tr>
+            <th>SENDER</th>
+            <th>RECEIVER</th>
+            <th>CREDITS</th>
+            <th>MESSAGE</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- loop through the database entries to create financial history table -->
+        {% for line in this_user_finance_history %}
+        <tr>
+            <td>{{ line.isfrom }}</td>
+            <td>{{ line.isto }}</td>
+            <td>{{ line.value }}</td>
+            <td>{{ line.message }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<form action="{{ url_for('remove_user', del_user_id=edited_user.id)}}" method="POST" style="display: inline;">
+    <fieldset>
+        <legend>
+            <h2>Delete user</h2>
+        </legend>
+        <p>
+            <strong>Warning</strong>: This is permanent and cannot be undone. All history and related inventory will be
+            lost with user.
+        </p>
+        <button type="submit" class="warning_button">
+            Delete user
+            <!-- <img src="{{ url_for('static', filename='icon-bin.svg') }}" alt="delete" /> -->
+        </button>
     </fieldset>
 </form>
 

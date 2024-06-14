@@ -9,11 +9,11 @@ up_arrow.src = "static/icon-arrow-up.svg";
 function collapseSegment(segmentId, iconId) {
   var element = document.getElementById(segmentId);
   var icon = document.getElementById(iconId);
-  if (element.style.display === "block") {
-    element.style.display = "none";
-    icon.src = down_arrow.src;
-  } else {
+  if (element.style.display === "none") {
     element.style.display = "block";
     icon.src = up_arrow.src;
+  } else {
+    element.style.display = "none";
+    icon.src = down_arrow.src;
   }
 }

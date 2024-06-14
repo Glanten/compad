@@ -107,7 +107,11 @@ def edit_user(edit_user_id):
     
     else:
         # take admin to edit_user page
-        return render_template("edit_user.html", edited_user=edited_user)
+        # function here to compile financial history from database
+        this_user = db.execute("SELECT username FROM users WHERE id = ?", edit_user_id)[0]['username']
+        this_user_finance_history = db.execute("SELECT * FROM financehistory WHERE isfrom = ? OR isto = ? ORDER BY id", this_user, this_user)
+
+        return render_template("edit_user.html", edited_user=edited_user, this_user_finance_history=this_user_finance_history)
 
 # register a new user
 @app.route("/register", methods=["GET", "POST"])

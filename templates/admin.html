@@ -19,7 +19,7 @@
 <div class="darker">
     <h2 class="cursor_pointer" onclick="collapseSegment('admin_user_list', 'admin_user_list_expand')">
         Users
-        <img class="float_right" id="admin_user_list_expand" src="static\icon-arrow-down.svg" />
+        <img class="float_right" id="admin_user_list_expand" src="static\icon-arrow-up.svg" />
     </h2>
     <div class="collapsible" id="admin_user_list">
 
@@ -39,7 +39,7 @@
                         <input name="password" placeholder="Password" type="password" />
                         <input name="confirmation" placeholder="Repeat Password" type="password" />
                     </p>
-                    <button type="submit">Register</button>
+                    <button type="submit" class="ui_button">Register</button>
                 </fieldset>
             </form>
         </div>
@@ -53,7 +53,6 @@
                     <th>CAMPAIGN</th>
                     <th>CREDITS</th>
                     <th>EDIT</th>
-                    <th>DELETE</th>
                 </tr>
             </thead>
             <tbody>
@@ -84,6 +83,7 @@
                             </button>
                         </form>
                     </td>
+                    <!-- moved to 'edit user' page to avoid accidental deletion
                     <td>
                         {% if entry.admin != 1 %}
                         <form action="{{ url_for('remove_user', del_user_id=entry.id)}}" method="POST"
@@ -94,6 +94,7 @@
                         </form>
                         {% endif %}
                     </td>
+                    -->
                 </tr>
                 {% endfor %}
             </tbody>
@@ -107,7 +108,7 @@
 <div class="darker">
     <h2 class="cursor_pointer" onclick="collapseSegment('admin_credits', 'admin_credits_expand')">
         Credits
-        <img class="float_right" id="admin_credits_expand" src="static\icon-arrow-down.svg" />
+        <img class="float_right" id="admin_credits_expand" src="static\icon-arrow-up.svg" />
     </h2>
     <div class="collapsible" id="admin_credits">
 
@@ -130,7 +131,7 @@
                         <img src="static\icon-note.svg" alt="message" />
                         <input name="credstick_message" placeholder="Message" type="text">
                     </p>
-                    <button type="submit">Create</button>
+                    <button type="submit" class="ui_button">Create</button>
                 </fieldset>
             </form>
         </div>
@@ -185,7 +186,7 @@
 <div class="darker">
     <h2 class="cursor_pointer" onclick="collapseSegment('admin_compad', 'admin_compad_expand')">
         Compad
-        <img class="float_right" id="admin_compad_expand" src="static\icon-arrow-down.svg" />
+        <img class="float_right" id="admin_compad_expand" src="static\icon-arrow-up.svg" />
     </h2>
     <div class="collapsible" id="admin_compad">
         <p>Send messages here (to, from, message)</p>
@@ -195,7 +196,7 @@
 <div class="darker">
     <h2 class="cursor_pointer" onclick="collapseSegment('admin_starmaps', 'admin_starmaps_expand')">
         Starmaps
-        <img class="float_right" id="admin_starmaps_expand" src="static\icon-arrow-down.svg" />
+        <img class="float_right" id="admin_starmaps_expand" src="static\icon-arrow-up.svg" />
     </h2>
     <div class="collapsible" id="admin_starmaps">
         <p>Monitor and create starmap codes here (code, URL)</p>
@@ -205,7 +206,7 @@
 <div class="darker">
     <h2 class="cursor_pointer" onclick="collapseSegment('admin_systems', 'admin_systems_expand')">
         Systems
-        <img class="float_right" id="admin_systems_expand" src="static\icon-arrow-down.svg" />
+        <img class="float_right" id="admin_systems_expand" src="static\icon-arrow-up.svg" />
     </h2>
     <div class="collapsible" id="admin_systems">
         <p>Create star system entries here (details TBD)</p>
