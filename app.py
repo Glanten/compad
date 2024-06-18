@@ -1,6 +1,7 @@
 from cs50 import SQL
 from flask import Flask, redirect, render_template, request, session
 from flask_session import Session
+import os
 from werkzeug.security import check_password_hash, generate_password_hash
 
 from helpers import login_required
@@ -42,6 +43,8 @@ def after_request(response):
 def index():
     return render_template("index.html")
 
+#--- ADMIN ---#
+
 @app.route("/admin")
 @login_required
 def admin():
@@ -51,12 +54,19 @@ def admin():
         # if user is not admin, send them to error page
         return render_template("error.html", error_message="administrator access only")
     
-    # if user is admin...
+    # otherwise, if user is admin...
     # get list of users and send them to admin page
     user_list = db.execute("SELECT * FROM users ORDER BY id")
+    
     # get list of credstick and send them to admin page
     credsticks_list = db.execute("SELECT * FROM credsticks ORDER BY id")
-    return render_template("admin.html", user_list=user_list, credsticks_list=credsticks_list)
+
+    # get list of starmap image URLs and send them to admin page
+    starmaps_directory = os.path.join(app.static_folder, 'starmaps')
+    starmap_urls = [file for file in os.listdir(starmaps_directory) if file.endswith('.jpg')]
+    # get list of starmaps and send them to admin page
+    starmaps_list = db.execute("SELECT * FROM starmaps ORDER BY id")
+    return render_template("admin.html", user_list=user_list, credsticks_list=credsticks_list, starmap_urls=starmap_urls, starmaps_list=starmaps_list)
 
 @app.route("/remove_user/<int:del_user_id>", methods=['POST'])
 @login_required
@@ -110,8 +120,9 @@ def edit_user(edit_user_id):
         # function here to compile financial history from database
         this_user = db.execute("SELECT username FROM users WHERE id = ?", edit_user_id)[0]['username']
         this_user_finance_history = db.execute("SELECT * FROM financehistory WHERE isfrom = ? OR isto = ? ORDER BY id", this_user, this_user)
+        logged_in_user_id = session['user_id']
 
-        return render_template("edit_user.html", edited_user=edited_user, this_user_finance_history=this_user_finance_history)
+        return render_template("edit_user.html", edited_user=edited_user, this_user_finance_history=this_user_finance_history, logged_in_user_id=logged_in_user_id)
 
 # register a new user
 @app.route("/register", methods=["GET", "POST"])
@@ -149,6 +160,8 @@ def register():
     else:
     # user arrived by GET (i.e. typed in URL or via link) instead of POST, take them to admin page
         return redirect("/admin")
+    
+#--- LOGIN / LOGOUT ---#
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -196,6 +209,37 @@ def logout():
     session.clear()
     # Redirect user to login form
     return redirect("/")
+
+@app.route("/account", methods=['GET', 'POST'])
+@login_required
+def account():
+    """Permit changes to logged-in user's account """
+    if request.method == 'POST':
+        # check to see if current password was submitted
+        if not request.form.get("old_password"):
+            return render_template("error.html", error_message="current password not provided")
+        
+        # check to see if new password was submitted
+        if not request.form.get("new_password"):
+            return render_template("error.html", error_message="new password not provided")
+        
+        # ensure new password and confirmation password match
+        if request.form.get("new_password") != request.form.get("confirmation"):
+            return render_template("error.html", error_message="passwords do not match")
+        
+        # check to see if old password is correct
+        current_user = db.execute("SELECT * FROM users WHERE id = ?", session['user_id'])
+        if not check_password_hash(current_user[0]['hash'], request.form.get("old_password")):
+            return render_template("error.html", error_message="current password incorrect")
+        
+        # otherwise, update the user
+        new_password = generate_password_hash(request.form.get("new_password"), method='scrypt', salt_length=16)
+        db.execute("UPDATE users SET hash = ? WHERE id = ?", new_password, session['user_id'])
+        return redirect("/")
+    else:
+        return render_template("account.html")
+
+#--- CREDITS ---#
 
 @app.route("/credits")
 @login_required
@@ -326,7 +370,7 @@ def credits_receive():
         return redirect("/credits")
 
 # create new credstick
-@app.route("/credstick", methods=["GET", "POST"])
+@app.route("/credstick", methods=['GET', 'POST'])
 @login_required
 def credstick():
     """Create new credstick for issue"""
@@ -373,49 +417,82 @@ def remove_credstick(credstick_id):
     db.execute("DELETE FROM credsticks WHERE id = ?", credstick_id)
     return redirect("/admin")
 
+#--- SYSTEM MAPS ---#
+
 @app.route("/system")
 @login_required
 def system():
     return render_template("system.html")
 
+#--- STARCHARTS ---#
+
 @app.route("/starmap")
 @login_required
 def starmap():
+    """Show starcharts user has unlocked, allow user to unlock new charts with a code"""
+    # create variable to list user's unlocked charts
+
     return render_template("starmap.html")
+
+@app.route("/starmap_creation", methods=['GET', 'POST'])
+@login_required
+def starmap_creation():
+    """Make a new starmap code"""
+    # when user hits submit button on form...
+    if request.method == 'POST':
+        submitted_starmap_code = request.form.get("starmap_code")
+        submitted_starmap_name = request.form.get("starmap_mapname")
+        submitted_starmap_url = request.form.get("starmap_url")
+        #query database for existing name or code match
+        existing_starmap_code = db.execute("SELECT * FROM starmaps WHERE code = ?", submitted_starmap_code)
+        existing_starmap_name = db.execute("SELECT * FROM starmaps WHERE mapname = ?", submitted_starmap_name)
+        if existing_starmap_code:
+            # the starmap code must be unique
+            return render_template("error.html", error_message="starmap code already in use")
+        elif existing_starmap_name:
+            # the starmap name must be unique
+            return render_template("error.html", error_message="starmap name already in use")
+        else:
+            # ensure a code was submitted
+            if not request.form.get("starmap_code"):
+                return render_template("error.html", error_message="no starmap code submitted")
+            elif not request.form.get("starmap_mapname"):
+                return render_template("error.html", error_message="no starmap name submitted")
+            elif not request.form.get("starmap_url"):
+                return render_template("error.html", error_message="no starmap filename submitted")
+            # create the new starmap
+            else:
+                db.execute("INSERT INTO starmaps (mapname, url, code) VALUES (?, ?, ?)", submitted_starmap_name, submitted_starmap_url, submitted_starmap_code)
+                return redirect("/admin")
+    else:
+    # user arrived by GET (i.e. typed in URL or via link) instead of POST, send user to appropriate web page
+        return redirect("/admin")
+
+@app.route("/remove_starmap_code/<int:starmap_id>", methods=['POST'])
+@login_required
+def remove_starmap_code(starmap_id):
+    """Delete starmap code entry from database"""
+    # remove entry from database according to submitted id
+    db.execute("DELETE FROM starmaps WHERE id = ?", starmap_id)
+    return redirect("/admin")
+
+@app.route("/starmap_unlock", methods=['GET', 'POST'])
+@login_required
+def starmap_unlock():
+    # user arrived by post (i.e. submitted form)
+    if request.method == "POST":
+        # TO DO!
+        return render_template("starmap.html")
+    else:
+        # user arrived by GET (i.e. via link or typed URL), send them to the starmap page
+        return render_template("starmap.html")
+
+#--- DID YOU GET MY WAVE? ---#
 
 @app.route("/compad")
 @login_required
 def compad():
     return render_template("compad.html")
-
-@app.route("/account", methods=['GET', 'POST'])
-@login_required
-def account():
-    """Permit changes to logged-in user's account """
-    if request.method == 'POST':
-        # check to see if current password was submitted
-        if not request.form.get("old_password"):
-            return render_template("error.html", error_message="current password not provided")
-        
-        # check to see if new password was submitted
-        if not request.form.get("new_password"):
-            return render_template("error.html", error_message="new password not provided")
-        
-        # ensure new password and confirmation password match
-        if request.form.get("new_password") != request.form.get("confirmation"):
-            return render_template("error.html", error_message="passwords do not match")
-        
-        # check to see if old password is correct
-        current_user = db.execute("SELECT * FROM users WHERE id = ?", session['user_id'])
-        if not check_password_hash(current_user[0]['hash'], request.form.get("old_password")):
-            return render_template("error.html", error_message="current password incorrect")
-        
-        # otherwise, update the user
-        new_password = generate_password_hash(request.form.get("new_password"), method='scrypt', salt_length=16)
-        db.execute("UPDATE users SET hash = ? WHERE id = ?", new_password, session['user_id'])
-        return redirect("/")
-    else:
-        return render_template("account.html")
 
 # Error page
 @app.errorhandler(404)

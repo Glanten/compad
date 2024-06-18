@@ -185,3 +185,10 @@ input {
   font-family: "Courier New", Courier, monospace;
   padding: 6px;
 }
+
+/* drop-down boxes */
+select {
+  font-size: 16px;
+  font-family: "Courier New", Courier, monospace;
+  padding: 6px;
+}

@@ -7,8 +7,52 @@
 
 {% block main %}
 
-<H1>Starmap Database</H1>
+<h1>Starmap Database</h1>
 
-<p>UNDER CONSTRUCTION</p>
+<!-- existing charts in user's inventory -->
+<h2>Catalogue</h2>
+<table class="dark_table">
+    <thead>
+        <tr>
+            <th>NAME</th>
+            <th>URL</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- loop through the database entries to create table of starmap unlock codes -->
+        <!--
+        {% for stick in credsticks_list %}
+        <tr>
+            <td>
+                {{ stick.code }}
+            </td>
+            <td>
+                {{ stick.credits }}
+            </td>
+        </tr>
+        {% endfor %}
+        -->
+    </tbody>
+</table>
+
+<!-- unlock new chart with code -->
+<form action="/starmap_unlock" method="post">
+    <fieldset>
+        <legend>
+            <h2>Use starmap code</h2>
+        </legend>
+        <div>
+            <p>
+                <label>
+                    Code
+                </label>
+                <input type="text" name="input_starmap_code" />
+            </p>
+            <div>
+                <button type="submit" class="ui_button">Unlock</button>
+            </div>
+        </div>
+    </fieldset>
+</form>
 
 {% endblock %}

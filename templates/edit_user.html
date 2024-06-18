@@ -52,6 +52,8 @@
         </p>
 
         <!-- admin status -->
+        <!-- only available for other users (not current user) to avoid locking self out of admin console -->
+        {% if edited_user.id != logged_in_user_id %}
         <p>
             <span>
                 <img src="{{ url_for('static', filename='icon-key.svg') }}" alt="username" />
@@ -62,6 +64,7 @@
             <input type="radio" id="new_admin_status_no" name="new_admin_status" value="0">
             <label for="new_admin_status_no">No</label><br>
         </p>
+        {% endif %}
 
         <button type="submit" class="ui_button">Update details</button>
     </fieldset>
@@ -92,6 +95,8 @@
     </tbody>
 </table>
 
+<!-- delete user; admin users cannot be deleted (make them non-admins first) -->
+{% if edited_user.admin != 1 %}
 <form action="{{ url_for('remove_user', del_user_id=edited_user.id)}}" method="POST" style="display: inline;">
     <fieldset>
         <legend>
@@ -103,9 +108,9 @@
         </p>
         <button type="submit" class="warning_button">
             Delete user
-            <!-- <img src="{{ url_for('static', filename='icon-bin.svg') }}" alt="delete" /> -->
         </button>
     </fieldset>
 </form>
+{% endif %}
 
 {% endblock %}
