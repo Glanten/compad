@@ -31,15 +31,21 @@
                         <h3>Create new user</h3>
                     </legend>
                     <p>
+                        <label hidden for="new_user_username">Username</label>
                         <img src="static\icon-user.svg" alt="username" />
-                        <input autocomplete="off" name="username" placeholder="Username" type="text" />
+                        <input autocomplete="off" name="username" placeholder="Username" type="text"
+                            id="new_user_username" />
                     </p>
                     <p>
+                        <label hidden for="new_user_password">Password</label>
                         <img src="static\icon-lock.svg" alt="password" />
-                        <input name="password" placeholder="Password" type="password" />
-                        <input name="confirmation" placeholder="Repeat Password" type="password" />
+                        <input name="password" placeholder="Password" type="password" id="new_user_password" />
+                        <label hidden for="new_user_confirm_password">Repeat password</label>
+                        <input name="confirmation" placeholder="Repeat Password" type="password"
+                            id="new_user_confirm_password" />
                     </p>
-                    <button type="submit" class="ui_button">Register</button>
+                    <label hidden for="new_user_register_button">Register new user</label>
+                    <button type="submit" class="ui_button" id="new_user_register_button">Register</button>
                 </fieldset>
             </form>
         </div>
@@ -78,7 +84,9 @@
                     <td>
                         <form action="{{ url_for('edit_user', edit_user_id=entry.id)}}" method="GET"
                             style="display: inline;">
-                            <button type="submit" class="cursor_pointer" style="border: none; background: none;">
+                            <label hidden for="edit_user_{{ entry.username }}">Edit {{ entry.username }}</label>
+                            <button type="submit" class="cursor_pointer" style="border: none; background: none;"
+                                id="edit_user_{{ entry.username }}">
                                 <img src="static\icon-edit.svg" alt="edit" />
                             </button>
                         </form>
@@ -107,18 +115,23 @@
                         <h3>New credstick</h3>
                     </legend>
                     <p>
+                        <label hidden for="new_credstick_code">Credstick code</label>
                         <img src="static\icon-code.svg" alt="code" />
-                        <input autocomplete="off" name="credstick_code" placeholder="Code" type="text">
+                        <input autocomplete="off" name="credstick_code" placeholder="Code" type="text"
+                            id="new_credstick_code">
                     </p>
                     <p>
+                        <label hidden for="new_credstick_value">Credstick value</label>
                         <img src="static\icon-money.svg" alt="value" />
-                        <input name="credstick_credits" placeholder="Credits" type="number">
+                        <input name="credstick_credits" placeholder="Credits" type="number" id="new_credstick_value">
                     </p>
                     <p>
+                        <label hidden for="new_credstick_message">Credstick message</label>
                         <img src="static\icon-note.svg" alt="message" />
-                        <input name="credstick_message" placeholder="Message" type="text">
+                        <input name="credstick_message" placeholder="Message" type="text" id="new_credstick_message">
                     </p>
-                    <button type="submit" class="ui_button">Create</button>
+                    <label hidden for="new_credstick_button">Create new credstick</label>
+                    <button type="submit" class="ui_button" id="new_credstick_button">Create</button>
                 </fieldset>
             </form>
         </div>
@@ -157,7 +170,9 @@
                     <td>
                         <form action="{{ url_for('remove_credstick', credstick_id=stick.id)}}" method="POST"
                             style="display: inline;">
-                            <button type="submit" class="cursor_pointer" style="border: none; background: none;">
+                            <label hidden for="remove_credstick_{{ stick.code }}">Delete {{ stick.code }}</label>
+                            <button type="submit" class="cursor_pointer" style="border: none; background: none;"
+                                id="remove_credstick_{{ stick.code }}">
                                 <img src="static\icon-bin.svg" alt="delete" />
                             </button>
                         </form>
@@ -197,16 +212,20 @@
                         <h3>New starmap code</h3>
                     </legend>
                     <p>
+                        <label hidden for="new_starmap_code">Starmap code</label>
                         <img src="static\icon-code.svg" alt="code" />
-                        <input autocomplete="off" name="starmap_code" placeholder="Code" type="text">
+                        <input autocomplete="off" name="starmap_code" placeholder="Code" type="text"
+                            id="new_starmap_code">
                     </p>
                     <p>
+                        <label hidden for="new_starmap_mapname">Starmap name</label>
                         <img src="static\icon-map.svg" alt="map name" />
-                        <input name="starmap_mapname" placeholder="Map name" type="text">
+                        <input name="starmap_mapname" placeholder="Map name" type="text" id="new_starmap_mapname">
                     </p>
                     <p>
                         <img src="static\icon-link.svg" alt="URL" />
-                        <select name="starmap_url">
+                        <label hidden for="new_starmap_filename">Starmap filename</label>
+                        <select name="starmap_url" id="new_starmap_filename">
                             <!-- populate with jinja for all available maps -->
                             <option value="blank" selected disabled>Starmap filename</option>
                             {% for image in starmap_urls %}
@@ -214,7 +233,10 @@
                             {% endfor %}
                         </select>
                     </p>
-                    <button type="submit" class="ui_button">Generate</button>
+                    <label hidden for="new_starmap_button">Generate new starmap</label>
+                    <button type="submit" class="ui_button" id="new_starmap_button">
+                        Generate
+                    </button>
                 </fieldset>
             </form>
         </div>
@@ -245,7 +267,9 @@
                     <td>
                         <form action="{{ url_for('remove_starmap_code', starmap_id=map.id)}}" method="POST"
                             style="display: inline;">
-                            <button type="submit" class="cursor_pointer" style="border: none; background: none;">
+                            <label hidden for="remove_starmap_{{ map.mapname }}">Delete {{ map.mapname }}</label>
+                            <button type="submit" class="cursor_pointer" style="border: none; background: none;"
+                                id="remove_starmap_{{ map.mapname }}">
                                 <img src="static\icon-bin.svg" alt="delete" />
                             </button>
                         </form>
