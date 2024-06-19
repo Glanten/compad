@@ -83,18 +83,6 @@
                             </button>
                         </form>
                     </td>
-                    <!-- moved to 'edit user' page to avoid accidental deletion
-                    <td>
-                        {% if entry.admin != 1 %}
-                        <form action="{{ url_for('remove_user', del_user_id=entry.id)}}" method="POST"
-                            style="display: inline;">
-                            <button type="submit" class="cursor_pointer" style="border: none; background: none;">
-                                <img src="static\icon-bin.svg" alt="delete" />
-                            </button>
-                        </form>
-                        {% endif %}
-                    </td>
-                    -->
                 </tr>
                 {% endfor %}
             </tbody>
@@ -252,7 +240,7 @@
                         {{ map.mapname }}
                     </td>
                     <td>
-                        <a href="static\starmaps\{{ map.url }}">{{ map.url }}</a>
+                        <a href="static\starmaps\{{ map.url }}" target="_blank">{{ map.url }}</a>
                     </td>
                     <td>
                         <form action="{{ url_for('remove_starmap_code', starmap_id=map.id)}}" method="POST"

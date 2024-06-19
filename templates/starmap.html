@@ -20,18 +20,16 @@
     </thead>
     <tbody>
         <!-- loop through the database entries to create table of starmap unlock codes -->
-        <!--
-        {% for stick in credsticks_list %}
+        {% for item in catalogue %}
         <tr>
             <td>
-                {{ stick.code }}
+                {{ item.mapname }}
             </td>
             <td>
-                {{ stick.credits }}
+                <a href="static/starmaps/{{ item.url }}" target="_blank">{{ item.url }}</a>
             </td>
         </tr>
         {% endfor %}
-        -->
     </tbody>
 </table>
 

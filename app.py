@@ -117,12 +117,26 @@ def edit_user(edit_user_id):
     
     else:
         # take admin to edit_user page
-        # function here to compile financial history from database
+        # compile financial history from database
         this_user = db.execute("SELECT username FROM users WHERE id = ?", edit_user_id)[0]['username']
         this_user_finance_history = db.execute("SELECT * FROM financehistory WHERE isfrom = ? OR isto = ? ORDER BY id", this_user, this_user)
+        # compile starmap catalogue from database
+        user_map_list = []
+        for entry in db.execute("SELECT mapid FROM starmapinventory WHERE userid = ?", edit_user_id):
+            user_map_list.append(entry['mapid'])
+        user_map_catalogue = []
+        for x in user_map_list:
+            user_map_catalogue.append(db.execute("SELECT mapname, url FROM starmaps WHERE id = ?", x)[0])
+
         logged_in_user_id = session['user_id']
 
-        return render_template("edit_user.html", edited_user=edited_user, this_user_finance_history=this_user_finance_history, logged_in_user_id=logged_in_user_id)
+        return render_template(
+            "edit_user.html",
+            edited_user=edited_user,
+            this_user_finance_history=this_user_finance_history,
+            user_map_catalogue=user_map_catalogue,
+            logged_in_user_id=logged_in_user_id
+            )
 
 # register a new user
 @app.route("/register", methods=["GET", "POST"])
@@ -430,9 +444,16 @@ def system():
 @login_required
 def starmap():
     """Show starcharts user has unlocked, allow user to unlock new charts with a code"""
-    # create variable to list user's unlocked charts
+    # create variables to list user's unlocked charts
+    map_list = []
+    for entry in db.execute("SELECT mapid FROM starmapinventory WHERE userid = ?", session['user_id']):
+        map_list.append(entry['mapid'])
 
-    return render_template("starmap.html")
+    catalogue = []
+    for x in map_list:
+        catalogue.append(db.execute("SELECT mapname, url FROM starmaps WHERE id = ?", x)[0])
+
+    return render_template("starmap.html", catalogue=catalogue)
 
 @app.route("/starmap_creation", methods=['GET', 'POST'])
 @login_required
@@ -481,11 +502,32 @@ def remove_starmap_code(starmap_id):
 def starmap_unlock():
     # user arrived by post (i.e. submitted form)
     if request.method == "POST":
-        # TO DO!
-        return render_template("starmap.html")
+        submitted_starmap_code = request.form.get("input_starmap_code")
+        # ensure code was submitted
+        if not request.form.get("input_starmap_code"):
+            return render_template("error.html", error_message="no starmap code detected")
+        
+        # match input starmap code to starmap database
+        database_starmap_entry = db.execute("SELECT * FROM starmaps WHERE code = ?", submitted_starmap_code)
+        # if the code does not match any codes in the database...
+        if not database_starmap_entry:
+            return render_template("error.html", error_message="invalid starmap code")
+        else:
+            submitted_starmap_id = database_starmap_entry[0]['id']
+        
+        # query database to see if user has already unlocked this starmap
+        existing_starmap_unlock = db.execute("SELECT * FROM starmapinventory WHERE userid = ? AND mapid = ?", session["user_id"], submitted_starmap_id)
+        # if user already has map in inventory
+        if existing_starmap_unlock:
+            return render_template("error.html", error_message="starmap already unlocked in catalogue")
+        else:
+            # add starmap to user's catalogue
+            db.execute("INSERT INTO starmapinventory (userid, mapid) VALUES (?, ?)", session["user_id"], submitted_starmap_id)
+
+        return redirect("/starmap")
     else:
         # user arrived by GET (i.e. via link or typed URL), send them to the starmap page
-        return render_template("starmap.html")
+        return redirect("/starmap")
 
 #--- DID YOU GET MY WAVE? ---#
 

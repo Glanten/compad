@@ -95,6 +95,34 @@
     </tbody>
 </table>
 
+<!-- existing charts in user's inventory -->
+<h2>Starmap Inventory</h2>
+<table class="dark_table">
+    <thead>
+        <tr>
+            <th>NAME</th>
+            <th>URL</th>
+            <th>DELETE</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- loop through the database entries to create table of starmap unlock codes -->
+        {% for map in user_map_catalogue %}
+        <tr>
+            <td>
+                {{ map.mapname }}
+            </td>
+            <td>
+                <a href="{{ url_for('static', filename='starmaps/' ~ map.url) }}" target="_blank">{{ map.url }}</a>
+            </td>
+            <td>
+                <img src="{{ url_for('static', filename='icon-bin.svg') }}" alt="delete starmap entry" />
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
 <!-- delete user; admin users cannot be deleted (make them non-admins first) -->
 {% if edited_user.admin != 1 %}
 <form action="{{ url_for('remove_user', del_user_id=edited_user.id)}}" method="POST" style="display: inline;">
