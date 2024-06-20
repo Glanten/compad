@@ -19,36 +19,44 @@
         <p>
             <span>
                 <img src="{{ url_for('static', filename='icon-user.svg') }}" alt="username" />
-                Username:
+                <label for="edit_user_username">
+                    Username:
+                </label>
+                <input autocomplete="off" name="new_username" type="text" id="edit_user_username" />
             </span>
-            <input autocomplete="off" name="new_username" type="text" />
         </p>
 
         <!-- password -->
         <p>
             <span>
                 <img src="{{ url_for('static', filename='icon-lock.svg') }}" alt="password" />
-                Password:
+                <label for="edit_user_password">
+                    Password:
+                </label>
+                <input autocomplete="off" name="new_password" type="password" id="edit_user_password" />
             </span>
-            <input autocomplete="off" name="new_password" type="password" />
         </p>
 
         <!-- credits -->
         <p>
             <span>
                 <img src="{{ url_for('static', filename='icon-money.svg') }}" alt="credits" />
-                Credits:
+                <label for="edit_user_credits">
+                    Credits:
+                </label>
+                <input autocomplete="off" name="new_credits" type="number" min="0" id="edit_user_credits" />
             </span>
-            <input autocomplete="off" name="new_credits" type="number" min="0" />
         </p>
 
         <!-- campaign -->
         <p>
             <span>
                 <img src="{{ url_for('static', filename='icon-globe.svg') }}" alt="campaign" />
-                Campaign:
+                <label for="edit_user_campaign">
+                    Campaign:
+                </label>
+                <input autocomplete="off" name="new_campaign" type="number" id="edit_user_campaign" />
             </span>
-            <input autocomplete="off" name="new_campaign" type="number" />
         </p>
 
         <!-- admin status -->
@@ -66,7 +74,8 @@
         </p>
         {% endif %}
 
-        <button type="submit" class="ui_button">Update details</button>
+        <label hidden for="update_user_button"></label>
+        <button type="submit" class="ui_button" id="update_user_button">Update details</button>
     </fieldset>
 </form>
 
@@ -107,19 +116,19 @@
     </thead>
     <tbody>
         <!-- loop through the database entries to create table of starmap unlock codes -->
-        {% for map in user_map_catalogue %}
+
         <tr>
             <td>
-                {{ map.mapname }}
+
             </td>
             <td>
-                <a href="{{ url_for('static', filename='starmaps/' ~ map.url) }}" target="_blank">{{ map.url }}</a>
+
             </td>
             <td>
-                <img src="{{ url_for('static', filename='icon-bin.svg') }}" alt="delete starmap entry" />
+
             </td>
         </tr>
-        {% endfor %}
+
     </tbody>
 </table>
 
@@ -134,11 +143,14 @@
             <strong>Warning</strong>: This is permanent and cannot be undone. All history and related inventory will be
             lost with user.
         </p>
-        <button type="submit" class="warning_button">
+        <label hidden for="delete_user_button">Delete user</label>
+        <button type="submit" class="warning_button" id="delete_user_button">
             Delete user
         </button>
     </fieldset>
 </form>
 {% endif %}
+
+{{ user_map_catalogue }}
 
 {% endblock %}

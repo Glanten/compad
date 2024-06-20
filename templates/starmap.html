@@ -19,35 +19,34 @@
         </tr>
     </thead>
     <tbody>
-        <!-- loop through the database entries to create table of starmap unlock codes -->
-        {% for item in catalogue %}
+        <!-- loop through the database entries to create table of unlocked starmaps -->
+
         <tr>
             <td>
-                {{ item.mapname }}
+
             </td>
             <td>
-                <a href="static/starmaps/{{ item.url }}" target="_blank">{{ item.url }}</a>
+
             </td>
         </tr>
-        {% endfor %}
+
     </tbody>
 </table>
 
 <!-- unlock new chart with code -->
-<form action="/starmap_unlock" method="post">
+<form action="/" method="post">
     <fieldset>
         <legend>
             <h2>Use starmap code</h2>
         </legend>
         <div>
             <p>
-                <label>
-                    Code
-                </label>
-                <input type="text" name="input_starmap_code" />
+                <label for="starmap_code">Code</label>
+                <input type="text" name="input_starmap_code" id="starmap_code" />
             </p>
             <div>
-                <button type="submit" class="ui_button">Unlock</button>
+                <label hidden for="starmap_unlock_button">Unlock starmap</label>
+                <button type="submit" class="ui_button" id="starmap_unlock_button">Unlock</button>
             </div>
         </div>
     </fieldset>

@@ -121,12 +121,6 @@ def edit_user(edit_user_id):
         this_user = db.execute("SELECT username FROM users WHERE id = ?", edit_user_id)[0]['username']
         this_user_finance_history = db.execute("SELECT * FROM financehistory WHERE isfrom = ? OR isto = ? ORDER BY id", this_user, this_user)
         # compile starmap catalogue from database
-        user_map_list = []
-        for entry in db.execute("SELECT mapid FROM starmapinventory WHERE userid = ?", edit_user_id):
-            user_map_list.append(entry['mapid'])
-        user_map_catalogue = []
-        for x in user_map_list:
-            user_map_catalogue.append(db.execute("SELECT mapname, url FROM starmaps WHERE id = ?", x)[0])
 
         logged_in_user_id = session['user_id']
 
@@ -134,7 +128,6 @@ def edit_user(edit_user_id):
             "edit_user.html",
             edited_user=edited_user,
             this_user_finance_history=this_user_finance_history,
-            user_map_catalogue=user_map_catalogue,
             logged_in_user_id=logged_in_user_id
             )
 
@@ -444,90 +437,7 @@ def system():
 @login_required
 def starmap():
     """Show starcharts user has unlocked, allow user to unlock new charts with a code"""
-    # create variables to list user's unlocked charts
-    map_list = []
-    for entry in db.execute("SELECT mapid FROM starmapinventory WHERE userid = ?", session['user_id']):
-        map_list.append(entry['mapid'])
-
-    catalogue = []
-    for x in map_list:
-        catalogue.append(db.execute("SELECT mapname, url FROM starmaps WHERE id = ?", x)[0])
-
-    return render_template("starmap.html", catalogue=catalogue)
-
-@app.route("/starmap_creation", methods=['GET', 'POST'])
-@login_required
-def starmap_creation():
-    """Make a new starmap code"""
-    # when user hits submit button on form...
-    if request.method == 'POST':
-        submitted_starmap_code = request.form.get("starmap_code")
-        submitted_starmap_name = request.form.get("starmap_mapname")
-        submitted_starmap_url = request.form.get("starmap_url")
-        #query database for existing name or code match
-        existing_starmap_code = db.execute("SELECT * FROM starmaps WHERE code = ?", submitted_starmap_code)
-        existing_starmap_name = db.execute("SELECT * FROM starmaps WHERE mapname = ?", submitted_starmap_name)
-        if existing_starmap_code:
-            # the starmap code must be unique
-            return render_template("error.html", error_message="starmap code already in use")
-        elif existing_starmap_name:
-            # the starmap name must be unique
-            return render_template("error.html", error_message="starmap name already in use")
-        else:
-            # ensure a code was submitted
-            if not request.form.get("starmap_code"):
-                return render_template("error.html", error_message="no starmap code submitted")
-            elif not request.form.get("starmap_mapname"):
-                return render_template("error.html", error_message="no starmap name submitted")
-            elif not request.form.get("starmap_url"):
-                return render_template("error.html", error_message="no starmap filename submitted")
-            # create the new starmap
-            else:
-                db.execute("INSERT INTO starmaps (mapname, url, code) VALUES (?, ?, ?)", submitted_starmap_name, submitted_starmap_url, submitted_starmap_code)
-                return redirect("/admin")
-    else:
-    # user arrived by GET (i.e. typed in URL or via link) instead of POST, send user to appropriate web page
-        return redirect("/admin")
-
-@app.route("/remove_starmap_code/<int:starmap_id>", methods=['POST'])
-@login_required
-def remove_starmap_code(starmap_id):
-    """Delete starmap code entry from database"""
-    # remove entry from database according to submitted id
-    db.execute("DELETE FROM starmaps WHERE id = ?", starmap_id)
-    return redirect("/admin")
-
-@app.route("/starmap_unlock", methods=['GET', 'POST'])
-@login_required
-def starmap_unlock():
-    # user arrived by post (i.e. submitted form)
-    if request.method == "POST":
-        submitted_starmap_code = request.form.get("input_starmap_code")
-        # ensure code was submitted
-        if not request.form.get("input_starmap_code"):
-            return render_template("error.html", error_message="no starmap code detected")
-        
-        # match input starmap code to starmap database
-        database_starmap_entry = db.execute("SELECT * FROM starmaps WHERE code = ?", submitted_starmap_code)
-        # if the code does not match any codes in the database...
-        if not database_starmap_entry:
-            return render_template("error.html", error_message="invalid starmap code")
-        else:
-            submitted_starmap_id = database_starmap_entry[0]['id']
-        
-        # query database to see if user has already unlocked this starmap
-        existing_starmap_unlock = db.execute("SELECT * FROM starmapinventory WHERE userid = ? AND mapid = ?", session["user_id"], submitted_starmap_id)
-        # if user already has map in inventory
-        if existing_starmap_unlock:
-            return render_template("error.html", error_message="starmap already unlocked in catalogue")
-        else:
-            # add starmap to user's catalogue
-            db.execute("INSERT INTO starmapinventory (userid, mapid) VALUES (?, ?)", session["user_id"], submitted_starmap_id)
-
-        return redirect("/starmap")
-    else:
-        # user arrived by GET (i.e. via link or typed URL), send them to the starmap page
-        return redirect("/starmap")
+    return render_template("starmap.html")
 
 #--- DID YOU GET MY WAVE? ---#
 

@@ -13,15 +13,19 @@
     <form action="/login" method="post">
         <p>
         <div>
-            <input autocomplete="off" autofocus name="username" placeholder="Username" type="text" />
+            <label hidden for="login_username">Username</label>
+            <input autocomplete="off" autofocus name="username" placeholder="Username" type="text"
+                id="login_username" />
         </div>
         </p>
         <p>
         <div>
-            <input name="password" placeholder="Password" type="password">
+            <label hidden for="login_password">Password</label>
+            <input name="password" placeholder="Password" type="password" id="login_password">
         </div>
         </p>
-        <button type="submit" class="ui_button">Login</button>
+        <label hidden for="login_button">Login</label>
+        <button type="submit" class="ui_button" id="login_button">Login</button>
     </form>
 </div>
 

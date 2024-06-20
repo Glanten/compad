@@ -20,10 +20,8 @@
             <h2>Send credits</h2>
         </legend>
         <p>
-            <label>
-                Recipient
-            </label>
-            <select name="send_credits_to">
+            <label for="credits_send_recipient">Recipient</label>
+            <select name="send_credits_to" id="credits_send_recipient">
                 <!-- option to send to NPC or shop -->
                 <option value="NPC" selected>NPC or shop</option>
                 <!-- populate with jinja for every character in same campaign -->
@@ -33,19 +31,16 @@
             </select>
         </p>
         <p>
-            <label>
-                Credits
-            </label>
-            <input type="number" name="send_credits_amount" min="1" value="0" />
+            <label for="credits_send_amount">Credits</label>
+            <input type="number" name="send_credits_amount" min="1" value="0" id="credits_send_amount" />
         </p>
         <p>
-            <label>
-                Message
-            </label>
-            <input type="text" name="send_credits_note" />
+            <label for="credits_send_message">Message</label>
+            <input type="text" name="send_credits_note" id="credits_send_message" />
         </p>
         <div>
-            <button type="submit" class="ui_button">Send</button>
+            <label hidden for="credits_send_button">Send credits</label>
+            <button type="submit" class="ui_button" id="credits_send_button">Send</button>
         </div>
     </fieldset>
 </form>
@@ -58,13 +53,12 @@
         </legend>
         <div>
             <p>
-                <label>
-                    Code
-                </label>
-                <input type="text" name="input_credstick_code" />
+                <label for="credstick_code">Code</label>
+                <input type="text" name="input_credstick_code" id="credstick_code" />
             </p>
             <div>
-                <button type="submit" class="ui_button">Withdraw</button>
+                <label hidden for="credstick_button">Withdraw</label>
+                <button type="submit" class="ui_button" id="credstick_button">Withdraw</button>
             </div>
         </div>
     </fieldset>

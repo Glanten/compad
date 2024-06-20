@@ -18,17 +18,19 @@
         </legend>
 
         <p>
-            Old password:
-            <input name="old_password" placeholder="Old password" type="password">
+            <label for="account_old_password">Old password:</label>
+            <input name="old_password" placeholder="Old password" type="password" id="account_old_password">
         </p>
 
 
-        <p>New password:
-            <input name="new_password" placeholder="New password" type="password">
-            <input name="confirmation" placeholder="Repeat new password" type="password">
+        <p>
+            <label for="account_new_password">New password:</label>
+            <input name="new_password" placeholder="New password" type="password" id="account_new_password">
+            <label hidden for="account_confirm_password">New password:</label>
+            <input name="confirmation" placeholder="Repeat new password" type="password" id="account_confirm_password">
         </p>
-
-        <button type="submit" class="ui_button">Change Password</button>
+        <label hidden for="account_change_password_button">Change password</label>
+        <button type="submit" class="ui_button" id="account_change_password_button">Change Password</button>
     </fieldset>
 </form>
 
