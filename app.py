@@ -65,8 +65,8 @@ def admin():
     starmaps_directory = os.path.join(app.static_folder, 'starmaps')
     starmap_urls = [file for file in os.listdir(starmaps_directory) if file.endswith('.jpg')]
     # get list of starmaps and send them to admin page
-    starmaps_list = db.execute("SELECT * FROM starmaps ORDER BY id")
-    return render_template("admin.html", user_list=user_list, credsticks_list=credsticks_list, starmap_urls=starmap_urls, starmaps_list=starmaps_list)
+    
+    return render_template("admin.html", user_list=user_list, credsticks_list=credsticks_list, starmap_urls=starmap_urls)
 
 @app.route("/remove_user/<int:del_user_id>", methods=['POST'])
 @login_required
