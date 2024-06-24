@@ -61,12 +61,37 @@ def admin():
     # get list of credstick and send them to admin page
     credsticks_list = db.execute("SELECT * FROM credsticks ORDER BY id")
 
-    # get list of starmap image URLs and send them to admin page
-    starmaps_directory = os.path.join(app.static_folder, 'starmaps')
-    starmap_urls = [file for file in os.listdir(starmaps_directory) if file.endswith('.jpg')]
-    # get list of starmaps and send them to admin page
+    # get list of starmap image URLs
+    starmap_directory = os.listdir(os.path.join(app.static_folder, 'starmaps'))
+    starmap_urls = [file for file in starmap_directory if file.endswith('.jpg')]
+    # get starmap database
+    starmap_db = db.execute("SELECT * FROM starmaps;")
+    # get starmap database urls
+    starmap_db_urls = []
+    for db_entry in starmap_db:
+        starmap_db_urls.append(db_entry["url"])
+    # get list of unassigned starmap urls
+    unassigned_starmaps = []
+    for instance in starmap_urls:
+        if instance not in starmap_db_urls:
+            unassigned_starmaps.append(instance)
+    # get list of starmap codes
+    existing_starmap_codes = db.execute("SELECT * FROM starmapcodes;")
     
-    return render_template("admin.html", user_list=user_list, credsticks_list=credsticks_list, starmap_urls=starmap_urls)
+    # testing
+    existing_codes = db.execute("SELECT code FROM starmapcodes;")
+    return render_template(
+        "admin.html",
+        user_list=user_list,
+        credsticks_list=credsticks_list,
+        starmap_urls=starmap_urls,
+        starmap_db_urls=starmap_db_urls,
+        unassigned_starmaps=unassigned_starmaps,
+        existing_starmap_codes=existing_starmap_codes,
+        # might not need
+        starmap_db=starmap_db,
+        # testing
+        existing_codes=existing_codes)
 
 @app.route("/remove_user/<int:del_user_id>", methods=['POST'])
 @login_required
@@ -436,8 +461,68 @@ def system():
 @app.route("/starmap")
 @login_required
 def starmap():
-    """Show starcharts user has unlocked, allow user to unlock new charts with a code"""
+    """Show starcharts user has unlocked, allow user to unlock new charts with a code"""    
     return render_template("starmap.html")
+
+@app.route("/new_starmap_db_entry", methods=['POST'])
+@login_required
+def new_starmap_db_entry():
+    """Create a new entry in the database's "starmaps" table"""
+    # create variables from form information
+    submitted_filename = request.form.get('new_starmap_entry_filename')
+    valid_starmaps = os.listdir(os.path.join(app.static_folder, 'starmaps'))
+    starmap_db = db.execute("SELECT * FROM starmaps;")
+    existing_db_entries = []
+    for db_entry in starmap_db:
+        existing_db_entries.append(db_entry["url"])
+
+    # check value
+    if not request.form.get('new_starmap_entry_filename'):
+        return render_template("error.html", error_message="no filename detected")
+    elif submitted_filename not in valid_starmaps:
+        return render_template("error.html", error_message="invalid filename submitted")
+    elif submitted_filename in existing_db_entries:
+        return render_template("error.html", error_message="starmap already entered in database")
+    else:
+        db.execute("INSERT INTO starmaps (url) VALUES (?)", submitted_filename)
+    return redirect("/admin")
+
+@app.route("/new_starmap_unlock_code", methods=['POST'])
+@login_required
+def new_starmap_unlock_code():
+    """Create a starmap unlock code to give to user"""
+    # create variable from submitted form
+    submitted_starmap_url = request.form.get('starmap_db_entry')
+    submitted_starmap_code = request.form.get('new_starmap_code')
+    # ensure something was submitted
+    if not request.form.get('starmap_db_entry'):
+        return render_template("error.html", error_message="no starmap submitted")
+    elif not request.form.get('new_starmap_code'):
+        return render_template("error.html", error_message="no starmap code submitted")
+    # ensure code does not already exist
+    existing_codes = db.execute("SELECT code FROM starmapcodes;")
+    if submitted_starmap_code in existing_codes:
+        return render_template("error.html", error_message="starmap code already exists")
+    # ensure starmap is valid
+    starmap_db = db.execute("SELECT * FROM starmaps;")
+    valid_starmaps = []
+    for db_entry in starmap_db:
+        valid_starmaps.append(db_entry["url"])
+    if submitted_starmap_url not in valid_starmaps:
+        return render_template("error.html", error_message="starmap not found in database")
+    
+    # add new code to starmap code database
+    submitted_starmap_id = db.execute("SELECT id FROM starmaps WHERE url = ?", submitted_starmap_url)[0].get('id')
+    if not submitted_starmap_id:
+        return render_template("error.html", error_message="starmap id not found in starmap database")
+    else:
+        db.execute(
+            "INSERT INTO starmapcodes (starmapid, code) VALUES (?, ?)",
+            submitted_starmap_id,
+            submitted_starmap_code
+            )
+
+    return redirect("/admin")
 
 #--- DID YOU GET MY WAVE? ---#
 
