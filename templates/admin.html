@@ -204,113 +204,77 @@
     </h2>
     <div class="collapsible" id="admin_starmaps">
 
-        <p>starmap_urls = {{ starmap_urls }}</p>
-        <p>starmap_db = {{ starmap_db }}</p>
-        <p>starmap_db_urls = {{ starmap_db_urls }}</p>
-        <p>unassigned_starmaps = {{ unassigned_starmaps }}</p>
-        <p>existing_codes = {{ existing_codes }}</p>
-
-        <!-- JPGs in static/starmaps/ -->
-        <h3 hidden>Starmaps</h3>
-        <table class="dark_table">
-            <thead>
-                <tr>
-                    <th>URL</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- loop through the database entries to create table of credsticks -->
-                {% for raw_filename in starmap_urls %}
-                <tr>
-                    <td>
-                        <a href="static/starmaps/{{ raw_filename }}" target="_blank">{{ raw_filename }}</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <!-- take JPG in static/starmaps/ and add to database -->
+        <!-- take JPG in static/starmaps/ and submitted code and add to database -->
         <form action="/new_starmap_db_entry" method="post">
             <fieldset>
                 <legend>
                     <h3>Create starmap database entry</h3>
                 </legend>
-                <label hidden for="new_starmap_entry_filename">New starmap filename</label>
-                <img src="static\icon-link.svg" alt="code" />
-                <select name="new_starmap_entry_filename" id="new_starmap_entry_filename">
-                    <option disabled selected>
-                        Select starmap filename
-                    </option>
-                    {% for unassigned_item in unassigned_starmaps %}
-                    <option value="{{ unassigned_item }}">
-                        {{ unassigned_item }}
-                    </option>
-                    {% endfor %}
-                </select>
-                <label hidden for="new_starmap_db_button">Create new starmap database entry</label>
-                <button type="submit" class="ui_button" id="new_starmap_db_button">
-                    Create entry
-                </button>
-            </fieldset>
-        </form>
-
-        <form action="new_starmap_unlock_code" method="post">
-            <fieldset>
-                <legend>
-                    <h3>Create starmap unlock code</h3>
-                </legend>
                 <p>
-                    <label hidden for="starmap_db_entry">Starmap database entry</label>
-                    <img src="static\icon-map.svg" alt="map" />
-                    <select name="starmap_db_entry" id="starmap_db_entry">
+                    <label hidden for="new_starmap_entry_filename">New starmap filename</label>
+                    <img src="static\icon-link.svg" alt="code" />
+                    <select name="new_starmap_entry_filename" id="new_starmap_entry_filename">
                         <option disabled selected>
-                            Select starmap from database
+                            Select starmap filename
                         </option>
-                        {% for entry in starmap_db_urls %}
-                        <option value="{{ entry }}">
-                            {{ entry }}
+                        {% for unassigned_item in unassigned_starmaps %}
+                        <option value="{{ unassigned_item }}">
+                            {{ unassigned_item }}
                         </option>
                         {% endfor %}
                     </select>
                 </p>
                 <p>
-                    <label hidden for="new_starmap_code">New Starmap Code</label>
+                    <label hidden for="new_starmap_entry_code">Code for new starmap</label>
                     <img src="static\icon-code.svg" alt="code" />
-                    <input autocomplete="off" name="new_starmap_code" placeholder="Starmap code" type="text"
-                        id="new_starmap_code" />
+                    <input autocomplete="off" name="new_starmap_entry_code" placeholder="Starmap code" type="text"
+                        id="new_starmap_entry_code" />
                 </p>
                 <p>
-                    <label hidden for="">Create starmap code</label>
-                    <button type="submit" class="ui_button" id="">
-                        Create starmap code
+                    <label hidden for="new_starmap_db_button">Create new starmap database entry</label>
+                    <button type="submit" class="ui_button" id="new_starmap_db_button">
+                        Create entry
                     </button>
                 </p>
             </fieldset>
         </form>
 
-        <h3>Existing Starmap Codes</h3>
+        <h3>Starmap Database</h3>
         <table class="dark_table">
             <thead>
                 <tr>
+                    <th>URL</th>
                     <th>Code</th>
-                    <th>Starmap</th>
-                    <th>Delete</th>
+                    <th>New code</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
-                <!-- loop through the database entries to create table of credsticks -->
-                {% for code in existing_starmap_codes %}
+                <!-- loop through the database to create table entries -->
+                {% for starmap_db_entry in starmap_db %}
                 <tr>
                     <td>
-                        {{ code.code }}
+                        <a href="static/starmaps/{{ starmap_db_entry.url }}" target="_blank">{{ starmap_db_entry.url
+                            }}</a>
                     </td>
                     <td>
-                        {{ code.starmapid }}
+                        {{ starmap_db_entry.code }}
                     </td>
-                    <td>
-                        <img src="static\icon-bin.svg" alt="delete" />
-                    </td>
+                    <form action="{{ url_for('edit_starmap', starmap_id=starmap_db_entry.id)}}" method="POST"
+                        style="display: inline;">
+                        <td>
+                            <!--<label hidden for="edit_starmap_code">Code for new starmap</label>-->
+                            <input autocomplete="off" name="new_starmap_code" placeholder="New code" type="text"
+                                id="new_code_starmap_{{ starmap_db_entry.id }}" />
+                        </td>
+                        <td>
+                            <!--<label hidden for="edit_starmap{{ starmap_db_entry.id }}">Edit starmap {{ starmap_db_entry.id }} code</label>-->
+                            <button type="submit" class="cursor_pointer" style="border: none; background: none;"
+                                id="edit_starmap_{{ starmap_db_entry.id }}">
+                                <img src="static\icon-edit.svg" alt="edit" />
+                            </button>
+                        </td>
+                    </form>
                 </tr>
                 {% endfor %}
             </tbody>

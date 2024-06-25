@@ -14,27 +14,23 @@
 <table class="dark_table">
     <thead>
         <tr>
-            <th>NAME</th>
             <th>URL</th>
         </tr>
     </thead>
     <tbody>
         <!-- loop through the database entries to create table of unlocked starmaps -->
-
+        {% for map in users_maps %}
         <tr>
             <td>
-
-            </td>
-            <td>
-
+                <a href="static/starmaps/{{ map.url }}" target="_blank">{{ map.url }}</a>
             </td>
         </tr>
-
+        {% endfor %}
     </tbody>
 </table>
 
 <!-- unlock new chart with code -->
-<form action="/" method="post">
+<form action="add_starmap" method="post">
     <fieldset>
         <legend>
             <h2>Use starmap code</h2>

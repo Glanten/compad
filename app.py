@@ -23,7 +23,7 @@ def inject_admin_status():
     return dict(admin=admin_status)
 
 
-# Can't remember what this does...?
+# Ensure content is always fresh and not an old (potentially outdated) cached version
 @app.after_request
 def after_request(response):
     """Ensure responses aren't cached"""
@@ -75,23 +75,14 @@ def admin():
     for instance in starmap_urls:
         if instance not in starmap_db_urls:
             unassigned_starmaps.append(instance)
-    # get list of starmap codes
-    existing_starmap_codes = db.execute("SELECT * FROM starmapcodes;")
     
-    # testing
-    existing_codes = db.execute("SELECT code FROM starmapcodes;")
     return render_template(
         "admin.html",
         user_list=user_list,
         credsticks_list=credsticks_list,
-        starmap_urls=starmap_urls,
-        starmap_db_urls=starmap_db_urls,
         unassigned_starmaps=unassigned_starmaps,
-        existing_starmap_codes=existing_starmap_codes,
-        # might not need
         starmap_db=starmap_db,
-        # testing
-        existing_codes=existing_codes)
+        )
 
 @app.route("/remove_user/<int:del_user_id>", methods=['POST'])
 @login_required
@@ -105,6 +96,7 @@ def remove_user(del_user_id):
 @login_required
 def edit_user(edit_user_id):
     """Permit admins to edit users' details"""
+    logged_in_user_id = session['user_id']
     # fetch user from database
     edited_user = db.execute("SELECT * FROM users WHERE id = ?", edit_user_id)[0]
 
@@ -146,14 +138,20 @@ def edit_user(edit_user_id):
         this_user = db.execute("SELECT username FROM users WHERE id = ?", edit_user_id)[0]['username']
         this_user_finance_history = db.execute("SELECT * FROM financehistory WHERE isfrom = ? OR isto = ? ORDER BY id", this_user, this_user)
         # compile starmap catalogue from database
-
-        logged_in_user_id = session['user_id']
+        map_ids_in_inventory = db.execute("SELECT starmapid FROM starmapinventory WHERE userid = ?", edited_user["id"])
+        user_map_inventory = []
+        for item in map_ids_in_inventory:
+            user_map_inventory.append(item["starmapid"])
+        users_maps = []
+        for row in user_map_inventory:
+            users_maps.append(db.execute("SELECT * FROM starmaps WHERE id = ?", row)[0])
 
         return render_template(
             "edit_user.html",
             edited_user=edited_user,
             this_user_finance_history=this_user_finance_history,
-            logged_in_user_id=logged_in_user_id
+            logged_in_user_id=logged_in_user_id,
+            users_maps=users_maps
             )
 
 # register a new user
@@ -461,8 +459,50 @@ def system():
 @app.route("/starmap")
 @login_required
 def starmap():
-    """Show starcharts user has unlocked, allow user to unlock new charts with a code"""    
-    return render_template("starmap.html")
+    """Show starcharts user has unlocked, allow user to unlock new charts with a code"""
+    # get starmapids from starmapinventory
+    current_user = session['user_id']
+    map_ids_in_inventory = db.execute("SELECT starmapid FROM starmapinventory WHERE userid = ?", current_user)
+    user_map_inventory = []
+    for item in map_ids_in_inventory:
+        user_map_inventory.append(item["starmapid"])
+    
+    users_maps = []
+    for row in user_map_inventory:
+        users_maps.append(db.execute("SELECT * FROM starmaps WHERE id = ?", row)[0])
+
+    return render_template("starmap.html", users_maps=users_maps)
+
+@app.route("/add_starmap", methods=['POST'])
+@login_required
+def add_starmap():
+    """Add a starmap, via unlock code, to user's inventory"""
+    # create variables from submitted info
+    starmap_code = request.form.get("input_starmap_code")
+    starmap_db = db.execute("SELECT * FROM starmaps;")
+    current_user = session['user_id']
+    valid_codes = []
+    for entry in starmap_db:
+        valid_codes.append(entry["code"])
+    
+    starmapinventory_db = db.execute("SELECT * FROM starmapinventory WHERE userid = ?;", current_user)
+    current_entries = []
+    for mention in starmapinventory_db:
+        current_entries.append(mention["starmapid"])
+    
+    # validate input
+    if not request.form.get("input_starmap_code"):
+        return render_template("error.html", error_message="no starmap code detected")
+    elif starmap_code not in valid_codes:
+        return render_template("error.html", error_message="invalid code")
+    else:
+        starmap_to_add = db.execute("SELECT id FROM starmaps WHERE code = ?", starmap_code)[0]['id']
+    
+    if starmap_to_add in current_entries:
+        return redirect("/starmap")
+    else:
+        db.execute("INSERT INTO starmapinventory (userid, starmapid) VALUES (?, ?)", current_user, starmap_to_add)
+        return redirect("/starmap")
 
 @app.route("/new_starmap_db_entry", methods=['POST'])
 @login_required
@@ -473,56 +513,50 @@ def new_starmap_db_entry():
     valid_starmaps = os.listdir(os.path.join(app.static_folder, 'starmaps'))
     starmap_db = db.execute("SELECT * FROM starmaps;")
     existing_db_entries = []
+    existing_db_codes = []
     for db_entry in starmap_db:
         existing_db_entries.append(db_entry["url"])
-
-    # check value
+        existing_db_codes.append(db_entry["code"])
+    submitted_code = request.form.get('new_starmap_entry_code')
+    # check values
     if not request.form.get('new_starmap_entry_filename'):
         return render_template("error.html", error_message="no filename detected")
     elif submitted_filename not in valid_starmaps:
         return render_template("error.html", error_message="invalid filename submitted")
     elif submitted_filename in existing_db_entries:
         return render_template("error.html", error_message="starmap already entered in database")
+    elif not request.form.get('new_starmap_entry_code'):
+        return render_template("error.html", error_message="no code detected")
+    elif submitted_code in existing_db_codes:
+        return render_template("error.html", error_message="code already exists in database")
     else:
-        db.execute("INSERT INTO starmaps (url) VALUES (?)", submitted_filename)
+        db.execute("INSERT INTO starmaps (url, code) VALUES (?, ?)", submitted_filename, submitted_code)
     return redirect("/admin")
 
-@app.route("/new_starmap_unlock_code", methods=['POST'])
+@app.route("/edit_starmap/<int:starmap_id>", methods=['POST'])
 @login_required
-def new_starmap_unlock_code():
-    """Create a starmap unlock code to give to user"""
-    # create variable from submitted form
-    submitted_starmap_url = request.form.get('starmap_db_entry')
-    submitted_starmap_code = request.form.get('new_starmap_code')
-    # ensure something was submitted
-    if not request.form.get('starmap_db_entry'):
-        return render_template("error.html", error_message="no starmap submitted")
-    elif not request.form.get('new_starmap_code'):
-        return render_template("error.html", error_message="no starmap code submitted")
-    # ensure code does not already exist
-    existing_codes = db.execute("SELECT code FROM starmapcodes;")
-    if submitted_starmap_code in existing_codes:
-        return render_template("error.html", error_message="starmap code already exists")
-    # ensure starmap is valid
+def edit_starmap(starmap_id):
+    """Change starmap code"""
+    # create variables for submitted data
+    edited_starmap_id = starmap_id
+    edited_starmap_new_code = request.form.get("new_starmap_code")
+    # validate data
     starmap_db = db.execute("SELECT * FROM starmaps;")
-    valid_starmaps = []
-    for db_entry in starmap_db:
-        valid_starmaps.append(db_entry["url"])
-    if submitted_starmap_url not in valid_starmaps:
-        return render_template("error.html", error_message="starmap not found in database")
-    
-    # add new code to starmap code database
-    submitted_starmap_id = db.execute("SELECT id FROM starmaps WHERE url = ?", submitted_starmap_url)[0].get('id')
-    if not submitted_starmap_id:
-        return render_template("error.html", error_message="starmap id not found in starmap database")
+    codes_in_use = []
+    valid_starmap_ids = []
+    for entry in starmap_db:
+        codes_in_use.append(entry["code"])
+        valid_starmap_ids.append(entry["id"])
+    if not request.form.get("new_starmap_code"):
+        return render_template("error.html", error_message="no starmap code detected")
+    elif edited_starmap_new_code in codes_in_use:
+        return render_template("error.html", error_message="starmap code already in use")
+    elif edited_starmap_id not in valid_starmap_ids:
+        return render_template("error.html", error_message="invalid starmap id detected")
     else:
-        db.execute(
-            "INSERT INTO starmapcodes (starmapid, code) VALUES (?, ?)",
-            submitted_starmap_id,
-            submitted_starmap_code
-            )
-
-    return redirect("/admin")
+        # edit database with new code
+        db.execute("UPDATE starmaps SET code = ? WHERE id = ?", edited_starmap_new_code, edited_starmap_id)
+        return redirect("/admin")
 
 #--- DID YOU GET MY WAVE? ---#
 
@@ -530,6 +564,8 @@ def new_starmap_unlock_code():
 @login_required
 def compad():
     return render_template("compad.html")
+
+#--- MISC PAGES ---#
 
 # Error page
 @app.errorhandler(404)

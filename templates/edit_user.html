@@ -109,26 +109,23 @@
 <table class="dark_table">
     <thead>
         <tr>
-            <th>NAME</th>
             <th>URL</th>
             <th>DELETE</th>
         </tr>
     </thead>
     <tbody>
-        <!-- loop through the database entries to create table of starmap unlock codes -->
-
+        <!-- loop through the database entries to create table of unlocked starmaps -->
+        {% for map in users_maps %}
         <tr>
             <td>
 
+                <a href="{{ url_for('static', filename='starmaps/' ~ map.url) }}" target="_blank">{{ map.url }}</a>
             </td>
             <td>
-
-            </td>
-            <td>
-
+                <img src="{{ url_for('static', filename='icon-bin.svg') }}" alt="delete" />
             </td>
         </tr>
-
+        {% endfor %}
     </tbody>
 </table>
 
