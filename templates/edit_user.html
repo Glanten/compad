@@ -122,7 +122,14 @@
                 <a href="{{ url_for('static', filename='starmaps/' ~ map.url) }}" target="_blank">{{ map.url }}</a>
             </td>
             <td>
-                <img src="{{ url_for('static', filename='icon-bin.svg') }}" alt="delete" />
+                <form action="{{ url_for('remove_starmap', starmap_id=map.id, user_id=edited_user.id)}}" method="POST"
+                    style="display: inline;">
+                    <label hidden for="remove_starmap_{{ map.id }}">Remove starmap</label>
+                    <button type="submit" class="cursor_pointer" style="border: none; background: none;"
+                        id="remove_starmap_{{ map.id }}">
+                        <img src="{{ url_for('static', filename='icon-bin.svg') }}" alt="delete" />
+                    </button>
+                </form>
             </td>
         </tr>
         {% endfor %}

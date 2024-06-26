@@ -557,6 +557,18 @@ def edit_starmap(starmap_id):
         # edit database with new code
         db.execute("UPDATE starmaps SET code = ? WHERE id = ?", edited_starmap_new_code, edited_starmap_id)
         return redirect("/admin")
+    
+@app.route("/remove_starmap/<int:starmap_id><int:user_id>", methods=['POST'])
+@login_required
+def remove_starmap(starmap_id, user_id):
+    """Remove starmap from player inventory"""
+    # validate data
+    targetted_starmap = db.execute("SELECT * FROM starmapinventory WHERE starmapid = ? AND userid = ?", starmap_id, user_id)[0]
+    if not targetted_starmap:
+        return render_template("error.html", error_message="user/starmap combination not found in database")
+    else:
+        db.execute("DELETE FROM starmapinventory WHERE starmapid = ? AND userid = ?", starmap_id, user_id)
+        return redirect("/admin")
 
 #--- DID YOU GET MY WAVE? ---#
 
