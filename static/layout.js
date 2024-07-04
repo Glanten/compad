@@ -17,3 +17,15 @@ function collapseSegment(segmentId, iconId) {
     icon.src = down_arrow.src;
   }
 }
+
+// when the user scrolls down, hide the navbar; when the user scrolls up, show the navbar
+var prevScrollpos = window.scrollY; // was window.pageYOffset but that is now deprecated
+window.onscroll = function () {
+  var currentScrollPos = window.scrollY;
+  if (prevScrollpos > currentScrollPos) {
+    document.getElementById("template_header").style.top = "0";
+  } else {
+    document.getElementById("template_header").style.top = "-70px";
+  }
+  prevScrollpos = currentScrollPos;
+};
