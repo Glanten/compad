@@ -572,10 +572,22 @@ def remove_starmap(starmap_id, user_id):
 
 #--- DID YOU GET MY WAVE? ---#
 
-@app.route("/compad")
+@app.route("/compad", methods=['POST', 'GET'])
 @login_required
 def compad():
-    return render_template("compad.html")
+    """Display user's compad messages (primitive email system)"""
+    # get appropriate database contents
+    current_user = session['user_id']
+    if request.method == 'POST':
+        return "<b>POSTED!</b>"
+
+    else:
+        #method must = GET (i.e. link or URL entry)
+        msg_variable = "msg" + str(current_user)
+        current_username = db.execute("SELECT username FROM users WHERE id = ?", session['user_id'])[0]
+        user_messages = db.execute("SELECT * FROM ? WHERE userid = ?", msg_variable, current_user)
+        
+        return render_template("compad.html", user_messages=user_messages, current_username=current_username)
 
 #--- MISC PAGES ---#
 

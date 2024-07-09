@@ -11,4 +11,50 @@
 
 <p>UNDER CONSTRUCTION</p>
 
+<div>
+    <!-- testing ground -->
+    <p>
+        {{ user_messages }}
+    </p>
+</div>
+
+<div>
+    <form action="/compad" method="POST">
+        <fieldset>
+            <legend>Send new message</legend>
+            <!-- recipient -->
+            <p>
+                <label for="compose_recipient">To:</label>
+                <input type="text" id="compose_recipient" name="compose_recipient" required />
+            </p>
+            <!-- sender -->
+            <p>
+                <label for="compose_sender">From:</label>
+                <input type="text" id="compose_sender" name="compose_sender" readonly
+                    value="{{ current_username.username }}" />
+            </p>
+            <!-- message body -->
+            <p>
+                <label for="compose_message">Message:</label>
+                <input type="text" id="compose_message" name="compose_message" size="40" required />
+            </p>
+            <p>
+                <button type="submit" class="ui_button" id="compose_send_button">Send</button>
+            </p>
+        </fieldset>
+    </form>
+</div>
+
+<div>
+    <table>
+
+        <tr>
+            <th>To</th>
+            <th>From</th>
+            <th>Message</th>
+        </tr>
+
+    </table>
+</div>
+
 {% endblock %}
