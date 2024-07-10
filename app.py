@@ -579,18 +579,53 @@ def compad():
     # get appropriate database contents
     current_user = session['user_id']
     if request.method == 'POST':
-        compose_recipient = request.form.get("compose_recipient")
+
+        # ERROR CHECKING
+        # ensure "To" field is not empty
+        if not request.form.get("compose_recipient"):
+            return render_template("error.html", error_message="No recipient detected")
+        # no generic "NPC" recipient
+        if request.form.get("compose_npc_name") == "NPC" and request.form.get("compose_recipient") == "NPC":
+            return render_template("error.html", error_message="Please insert correct NPC name")
+        # if user is sending to NPC, ensure an NPC name was entered
+        if request.form.get("compose_recipient") == "NPC" and not request.form.get("compose_npc_name"):
+            return render_template("error.html", error_message="Please enter a valid NPC name")
+        # ensure non-admin user's username is in the "From" field
+        admin_status = session.get("admin", 0)
+        current_username = db.execute("SELECT username FROM users WHERE id = ?", session['user_id'])[0]['username']
+        if admin_status != 1:
+            if request.form.get("compose_sender") != current_username:
+                return render_template("error.html", error_message="From field contains incorrect data")
+        # ensure "From" field is not empty
+        if not request.form.get("compose_sender"):
+            return render_template("error.html", error_message="No entry in From field")
+        # ensure "Message" field is not empty
+        if not request.form.get("compose_message"):
+            return render_template("error.html", error_message="Cannot send blank message")
+        
+        # assign variables
         compose_sender = request.form.get("compose_sender")
         compose_message = request.form.get("compose_message")
-
-        compose_composit = "<b>to</b>: " + str(compose_recipient) + "<br /><b>from</b>: " + str(compose_sender) + "<br /><b>message</b>: "  + str(compose_message)
-        return "<h1>POSTED!</h1><br />" + compose_composit
+        if request.form.get("compose_recipient") == "NPC":
+            compose_recipient = request.form.get("compose_npc_name")
+        else:
+            compose_recipient = request.form.get("compose_recipient")
+        
+        # TESTING: NPC-to-NPC messages
+        if request.form.get("compose_recipient") == "NPC":
+            # update admin message database
+            admin_msgid = "msg1"
+            db.execute("INSERT INTO ? (toUser, fromUser, message) VALUES(?, ?, ?)", admin_msgid, compose_recipient, compose_sender, compose_message)
+            return redirect("/compad")
+        else:
+            compose_composit = "<b>to</b>: " + str(compose_recipient) + "<br /><b>from</b>: " + str(compose_sender) + "<br /><b>message</b>: "  + str(compose_message)
+            return "<h1>POSTED!</h1><br />" + compose_composit
 
     else:
-        # method must = GET (i.e. link or URL entry)
-        msg_variable = "msg" + str(current_user)
-        current_username = db.execute("SELECT username FROM users WHERE id = ?", session['user_id'])[0]
-        user_messages = db.execute("SELECT * FROM ? WHERE userid = ?", msg_variable, current_user)
+        # method must = GET (i.e. link or URL entry) - standard page display with messages, compose, etc.
+        user_msg_variable = "msg" + str(current_user)
+        current_username = db.execute("SELECT username FROM users WHERE id = ?", session['user_id'])[0]['username']
+        user_messages = db.execute("SELECT * FROM ? WHERE userId = ?", user_msg_variable, current_user)
         # list of characters in same campaign, for "send" list
         admin_status = session.get("admin", 0)
         if admin_status == 1:

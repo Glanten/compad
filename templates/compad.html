@@ -14,8 +14,8 @@
 <div>
     <!-- testing ground -->
     <p>
-        messages<br />
-        {{ user_messages }}
+        Username<br />
+        {{ current_username }}
     </p>
 </div>
 
@@ -24,38 +24,53 @@
         <fieldset>
             <legend>Send new message</legend>
             <!-- recipient -->
-            <p>
-                <label for="compose_recipient">To:</label>
-                <select name="compose_recipient" id="compose_recipient">
-                    <option value="NPC" selected>NPC</option>
-                    <!-- populate with jinja for every character in same campaign -->
-                    {% for person in recipient_list %}
-                    <option value="{{ person.username }}">{{ person.username }}</option>
-                    {% endfor %}
-                </select>
-                <!-- insert NPC recipient name -->
-                <label for="compose_npc_name">NPC Name:</label>
-                <input type="text" id="compose_npc_name" name="compose_npc_name" placeholder="NPC name (lower case)" />
-            </p>
-            <!-- sender -->
-            <p>
-                <label for="compose_sender">From:</label>
-
-                {% if admin == 1 %}
-                <!-- if user is admin, they can change sender -->
-                <input type="text" id="compose_sender" name="compose_sender" placeholder="NPC name (lower case)"
-                    required />
-                {% else %}
-                <!-- if user is not admin, they cannot change sender -->
-                <input type="text" id="compose_sender" name="compose_sender" readonly
-                    value="{{ current_username.username }}" />
-                {% endif %}
-            </p>
-            <!-- message body -->
-            <p>
-                <label for="compose_message">Message:</label>
-                <input type="text" id="compose_message" name="compose_message" size="40" required />
-            </p>
+            <table>
+                <tr>
+                    <td>
+                        <label for="compose_recipient">To:</label>
+                    </td>
+                    <td>
+                        <select name="compose_recipient" id="compose_recipient">
+                            <option value="NPC" selected>NPC</option>
+                            <!-- populate with jinja for every character in same campaign -->
+                            {% for person in recipient_list %}
+                            <option value="{{ person.username }}">{{ person.username }}</option>
+                            {% endfor %}
+                        </select>
+                        <!-- insert NPC recipient name -->
+                        <label for="compose_npc_name">NPC Name:</label>
+                        <input type="text" id="compose_npc_name" name="compose_npc_name"
+                            placeholder="NPC name (lower case)" />
+                    </td>
+                </tr>
+                <!-- sender -->
+                <tr>
+                    <td>
+                        <label for="compose_sender">From:</label>
+                    </td>
+                    <td>
+                        {% if admin == 1 %}
+                        <!-- if user is admin, they can change sender -->
+                        <input type="text" id="compose_sender" name="compose_sender" placeholder="NPC name (lower case)"
+                            required />
+                        {% else %}
+                        <!-- if user is not admin, they cannot change sender -->
+                        <input type="text" id="compose_sender" name="compose_sender" readonly
+                            value="{{ current_username }}" />
+                        {% endif %}
+                    </td>
+                </tr>
+                <!-- message body -->
+                <tr>
+                    <td>
+                        <label for="compose_message">Message:</label>
+                    </td>
+                    <td>
+                        <!-- not currently the right size -->
+                        <input type="textarea" id="compose_message" name="compose_message" required rows="2" cols="2" />
+                    </td>
+                </tr>
+            </table>
             <p>
                 <button type="submit" class="ui_button" id="compose_send_button">Send</button>
             </p>
@@ -63,14 +78,22 @@
     </form>
 </div>
 
-<div>
-    <table>
+<div style="padding-top: 10px;">
+    <table class="dark_table">
 
-        <tr>
+        <tr style="text-align:left">
             <th>To</th>
             <th>From</th>
             <th>Message</th>
         </tr>
+
+        {% for message in user_messages %}
+        <tr class="table_align_top">
+            <td>{{ message.toUser }}</td>
+            <td>{{ message.fromUser }}</td>
+            <td>{{ message.message }}</td>
+        </tr>
+        {% endfor %}
 
     </table>
 </div>

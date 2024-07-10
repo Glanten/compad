@@ -143,13 +143,26 @@ a {
   text-align: left;
 }
 
-.dark_table td {
+.dark_table td,
+.dark_table th {
   padding: 10px;
 }
 
 .dark_table tbody tr:hover {
   background-color: rgba(0, 0, 0, 0.33);
 }
+
+.table_align_top {
+  vertical-align: text-top;
+}
+
+/*
+#compose_message {
+  vertical-align: text-top;
+  height: 100px;
+  width: 100%;
+}
+*/
 
 /* saturated UI buttons */
 .ui_button,
