@@ -579,15 +579,32 @@ def compad():
     # get appropriate database contents
     current_user = session['user_id']
     if request.method == 'POST':
-        return "<b>POSTED!</b>"
+        compose_recipient = request.form.get("compose_recipient")
+        compose_sender = request.form.get("compose_sender")
+        compose_message = request.form.get("compose_message")
+
+        compose_composit = "<b>to</b>: " + str(compose_recipient) + "<br /><b>from</b>: " + str(compose_sender) + "<br /><b>message</b>: "  + str(compose_message)
+        return "<h1>POSTED!</h1><br />" + compose_composit
 
     else:
-        #method must = GET (i.e. link or URL entry)
+        # method must = GET (i.e. link or URL entry)
         msg_variable = "msg" + str(current_user)
         current_username = db.execute("SELECT username FROM users WHERE id = ?", session['user_id'])[0]
         user_messages = db.execute("SELECT * FROM ? WHERE userid = ?", msg_variable, current_user)
+        # list of characters in same campaign, for "send" list
+        admin_status = session.get("admin", 0)
+        if admin_status == 1:
+            recipient_list = db.execute("SELECT username FROM users WHERE NOT id = ?", session['user_id'])
+        else:
+            user_campaign = db.execute("SELECT campaign FROM users WHERE id = ?", session['user_id'])[0]['campaign']
+            recipient_list = db.execute("SELECT username FROM users WHERE campaign = ? AND NOT id = ?", user_campaign, session['user_id'])
         
-        return render_template("compad.html", user_messages=user_messages, current_username=current_username)
+        return render_template(
+            "compad.html",
+            user_messages=user_messages,
+            current_username=current_username,
+            recipient_list=recipient_list,
+            )
 
 #--- MISC PAGES ---#
 

@@ -14,6 +14,7 @@
 <div>
     <!-- testing ground -->
     <p>
+        messages<br />
         {{ user_messages }}
     </p>
 </div>
@@ -25,13 +26,30 @@
             <!-- recipient -->
             <p>
                 <label for="compose_recipient">To:</label>
-                <input type="text" id="compose_recipient" name="compose_recipient" required />
+                <select name="compose_recipient" id="compose_recipient">
+                    <option value="NPC" selected>NPC</option>
+                    <!-- populate with jinja for every character in same campaign -->
+                    {% for person in recipient_list %}
+                    <option value="{{ person.username }}">{{ person.username }}</option>
+                    {% endfor %}
+                </select>
+                <!-- insert NPC recipient name -->
+                <label for="compose_npc_name">NPC Name:</label>
+                <input type="text" id="compose_npc_name" name="compose_npc_name" placeholder="NPC name (lower case)" />
             </p>
             <!-- sender -->
             <p>
                 <label for="compose_sender">From:</label>
+
+                {% if admin == 1 %}
+                <!-- if user is admin, they can change sender -->
+                <input type="text" id="compose_sender" name="compose_sender" placeholder="NPC name (lower case)"
+                    required />
+                {% else %}
+                <!-- if user is not admin, they cannot change sender -->
                 <input type="text" id="compose_sender" name="compose_sender" readonly
                     value="{{ current_username.username }}" />
+                {% endif %}
             </p>
             <!-- message body -->
             <p>
