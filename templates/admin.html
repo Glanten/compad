@@ -19,7 +19,8 @@
 <div class="darker">
     <h2 class="cursor_pointer" onclick="collapseSegment('admin_user_list', 'admin_user_list_expand')">
         Users
-        <img class="float_right" id="admin_user_list_expand" src="static\icon-arrow-up.svg" />
+        <img class="float_right" id="admin_user_list_expand" src="static\icon-arrow-up.svg"
+            alt="expand/contract section" />
     </h2>
     <div class="collapsible" id="admin_user_list">
 
@@ -103,7 +104,8 @@
 <div class="darker">
     <h2 class="cursor_pointer" onclick="collapseSegment('admin_credits', 'admin_credits_expand')">
         Credits
-        <img class="float_right" id="admin_credits_expand" src="static\icon-arrow-up.svg" />
+        <img class="float_right" id="admin_credits_expand" src="static\icon-arrow-up.svg"
+            alt="expand/contract section" />
     </h2>
     <div class="collapsible" id="admin_credits">
 
@@ -189,7 +191,8 @@
 <div class="darker">
     <h2 class="cursor_pointer" onclick="collapseSegment('admin_compad', 'admin_compad_expand')">
         Compad
-        <img class="float_right" id="admin_compad_expand" src="static\icon-arrow-up.svg" />
+        <img class="float_right" id="admin_compad_expand" src="static\icon-arrow-up.svg"
+            alt="expand/contract section" />
     </h2>
     <div class="collapsible" id="admin_compad">
         <p>Send messages here (to, from, message)</p>
@@ -200,7 +203,8 @@
 <div class="darker">
     <h2 class="cursor_pointer" onclick="collapseSegment('admin_starmaps', 'admin_starmaps_expand')">
         Starmaps
-        <img class="float_right" id="admin_starmaps_expand" src="static\icon-arrow-up.svg" />
+        <img class="float_right" id="admin_starmaps_expand" src="static\icon-arrow-up.svg"
+            alt="expand/contract section" />
     </h2>
     <div class="collapsible" id="admin_starmaps">
 
@@ -218,7 +222,7 @@
                             Select starmap filename
                         </option>
                         {% for unassigned_item in unassigned_starmaps %}
-                        <option value="{{ unassigned_item }}">
+                        <option value="{{ unassigned_item }}" label="{{ unassigned_item }}">
                             {{ unassigned_item }}
                         </option>
                         {% endfor %}
@@ -287,7 +291,8 @@
 <div class="darker">
     <h2 class="cursor_pointer" onclick="collapseSegment('admin_systems', 'admin_systems_expand')">
         Systems
-        <img class="float_right" id="admin_systems_expand" src="static\icon-arrow-up.svg" />
+        <img class="float_right" id="admin_systems_expand" src="static\icon-arrow-up.svg"
+            alt="expand/contract section" />
     </h2>
     <div class="collapsible" id="admin_systems">
         <p>Create star system entries here (details TBD)</p>
@@ -298,7 +303,7 @@
 <div class="darker">
     <h2 class="cursor_pointer" onclick="collapseSegment('admin_news', 'admin_news_expand')">
         Sector News
-        <img class="float_right" id="admin_news_expand" src="static\icon-arrow-up.svg" />
+        <img class="float_right" id="admin_news_expand" src="static\icon-arrow-up.svg" alt="expand/contract section" />
     </h2>
     <div class="collapsible" id="admin_news">
         <p>Results of faction turns (in prose and game terms)</p>
