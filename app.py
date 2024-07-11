@@ -602,7 +602,7 @@ def compad():
         valid_username_list = []
         for identity in valid_usernames:
             valid_username_list.append(identity["username"])
-        if compose_recipient != "NPC" and compose_recipient not in valid_username_list:
+        if request.form.get("compose_recipient") != "NPC" and request.form.get("compose_recipient") not in valid_username_list:
             return render_template("error.html", error_message="Character not found in database")
         # ensure non-admin user's username is in the "From" field
         admin_status = session.get("admin", 0)
@@ -625,28 +625,29 @@ def compad():
         else:
             compose_recipient = request.form.get("compose_recipient")
         
-        # messages from admin
-        if current_user == 1:
-            # message to an NPC
-            if request.form.get("compose_recipient") == "NPC":
-                # update admin message database
-                admin_msgid = "msg1"
-                db.execute("INSERT INTO ? (toUser, fromUser, message) VALUES(?, ?, ?)", admin_msgid, compose_recipient, compose_sender, compose_message)
+        # MESSAGES TO AN NPC
+        user_msg_variable = "msg" + str(current_user)
+        current_user_admin_state = db.execute("SELECT admin FROM users WHERE id = ?", current_user)[0]['admin']
+        if request.form.get("compose_recipient") == "NPC":
+            recipient_msgid = "msg1"
+            # update admin's (i.e. user 1) messages
+            db.execute("INSERT INTO ? (toUser, fromUser, message) VALUES(?, ?, ?)", recipient_msgid, compose_recipient, compose_sender, compose_message)
+            if current_user_admin_state == 1:
+                # if current user is an admin, do nothing else
                 return redirect("/compad")
-            # message to a PC
             else:
-                # update admin message database
-                admin_msgid = "msg1"
-                #db.execute("INSERT INTO ? (toUser, fromUser, message) VALUES(?, ?, ?)", admin_msgid, compose_recipient, compose_sender, compose_message)
-                # update recipient message database
-                recipient_id = db.execute("SELECT id FROM users WHERE username = ?", compose_recipient)[0]['id']
-                recipient_msgid = "msg" + str(recipient_id)
-                #db.execute("INSERT INTO ? (toUser, fromUser, message) VALUES(?, ?, ?)", recipient_msgid, compose_recipient, compose_sender, compose_message)
-                return "recipient_id: " + str(recipient_id) + "\nrecipient_msgid: " + str(recipient_msgid) + "\nvalid usernames: " + str(valid_usernames) + "\nvalid username list: " + str(valid_username_list)
-                #return redirect("/compad")
-        else:
-            compose_composit = "<b>to</b>: " + str(compose_recipient) + "<br /><b>from</b>: " + str(compose_sender) + "<br /><b>message</b>: "  + str(compose_message)
-            return "<h1>POSTED!</h1><br />" + compose_composit
+                # if current user is non-admin, update current user's messages too
+                db.execute("INSERT INTO ? (toUser, fromUser, message) VALUES(?, ?, ?)", user_msg_variable, compose_recipient, compose_sender, compose_message)
+                return redirect("/compad")
+        elif request.form.get("compose_recipient") != "NPC":
+            # MESSAGES TO A PC
+            recipient_id = db.execute("SELECT id FROM users WHERE username = ?", compose_recipient)[0]['id']
+            recipient_msgid = "msg" + str(recipient_id)
+            # update sender's messages
+            db.execute("INSERT INTO ? (toUser, fromUser, message) VALUES(?, ?, ?)", user_msg_variable, compose_recipient, compose_sender, compose_message)
+            # update recipient's messages
+            db.execute("INSERT INTO ? (toUser, fromUser, message) VALUES(?, ?, ?)", recipient_msgid, compose_recipient, compose_sender, compose_message)
+            return redirect("/compad")
 
     else:
         # method must = GET (i.e. link or URL entry) - standard page display with messages, compose, etc.

@@ -9,16 +9,6 @@
 
 <h1>Compad</h1>
 
-<p>UNDER CONSTRUCTION</p>
-
-<div>
-    <!-- testing ground -->
-    <p>
-        Username<br />
-        {{ current_username }}
-    </p>
-</div>
-
 <div>
     <form action="/compad" method="POST">
         <fieldset>
@@ -38,6 +28,7 @@
                             {% endfor %}
                         </select>
                         <!-- insert NPC recipient name -->
+                        <!-- TO DO: make this disappear if "NPC" isn't picked in the select box?... JavaScript? -->
                         <label for="compose_npc_name">NPC Name:</label>
                         <input type="text" id="compose_npc_name" name="compose_npc_name"
                             placeholder="NPC name (lower case)" />
