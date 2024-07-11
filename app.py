@@ -90,6 +90,9 @@ def remove_user(del_user_id):
     """Delete user entry from database"""
     # remove entry from database according to submitted id
     db.execute("DELETE FROM users WHERE id = ?", del_user_id)
+    # also remove user's message table from database
+    deleted_user_compad_table_name = "msg" + str(del_user_id)
+    db.execute("DROP TABLE ?", deleted_user_compad_table_name)
     return redirect("/admin")
 
 @app.route("/edit_user/<int:edit_user_id>", methods=['GET', 'POST'])
@@ -185,6 +188,10 @@ def register():
                 request.form.get("password"), method='scrypt', salt_length=16)
             db.execute("INSERT INTO users (username, hash) VALUES(?, ?)",
                        submitted_username, hashed_password)
+            # create compad (i.e. mail) table for user in database
+            this_user_id = db.execute("SELECT id FROM users WHERE username = ?", submitted_username)[0]['id']
+            new_user_compad_tablename = "msg" + str(this_user_id)
+            db.execute("CREATE TABLE ? (msgId INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, userId INTEGER NOT NULL DEFAULT ?, toUser TEXT NOT NULL, fromUser TEXT NOT NULL, message TEXT NOT NULL, readState INTEGER DEFAULT 0, archive INTEGER DEFAULT 0);", new_user_compad_tablename, this_user_id)
             return redirect("/admin")
         
     else:
@@ -590,6 +597,13 @@ def compad():
         # if user is sending to NPC, ensure an NPC name was entered
         if request.form.get("compose_recipient") == "NPC" and not request.form.get("compose_npc_name"):
             return render_template("error.html", error_message="Please enter a valid NPC name")
+        # check for valid usernames in To: field
+        valid_usernames = db.execute("SELECT username FROM users WHERE admin IS NOT 1;")
+        valid_username_list = []
+        for identity in valid_usernames:
+            valid_username_list.append(identity["username"])
+        if compose_recipient != "NPC" and compose_recipient not in valid_username_list:
+            return render_template("error.html", error_message="Character not found in database")
         # ensure non-admin user's username is in the "From" field
         admin_status = session.get("admin", 0)
         current_username = db.execute("SELECT username FROM users WHERE id = ?", session['user_id'])[0]['username']
@@ -611,12 +625,25 @@ def compad():
         else:
             compose_recipient = request.form.get("compose_recipient")
         
-        # TESTING: NPC-to-NPC messages
-        if request.form.get("compose_recipient") == "NPC":
-            # update admin message database
-            admin_msgid = "msg1"
-            db.execute("INSERT INTO ? (toUser, fromUser, message) VALUES(?, ?, ?)", admin_msgid, compose_recipient, compose_sender, compose_message)
-            return redirect("/compad")
+        # messages from admin
+        if current_user == 1:
+            # message to an NPC
+            if request.form.get("compose_recipient") == "NPC":
+                # update admin message database
+                admin_msgid = "msg1"
+                db.execute("INSERT INTO ? (toUser, fromUser, message) VALUES(?, ?, ?)", admin_msgid, compose_recipient, compose_sender, compose_message)
+                return redirect("/compad")
+            # message to a PC
+            else:
+                # update admin message database
+                admin_msgid = "msg1"
+                #db.execute("INSERT INTO ? (toUser, fromUser, message) VALUES(?, ?, ?)", admin_msgid, compose_recipient, compose_sender, compose_message)
+                # update recipient message database
+                recipient_id = db.execute("SELECT id FROM users WHERE username = ?", compose_recipient)[0]['id']
+                recipient_msgid = "msg" + str(recipient_id)
+                #db.execute("INSERT INTO ? (toUser, fromUser, message) VALUES(?, ?, ?)", recipient_msgid, compose_recipient, compose_sender, compose_message)
+                return "recipient_id: " + str(recipient_id) + "\nrecipient_msgid: " + str(recipient_msgid) + "\nvalid usernames: " + str(valid_usernames) + "\nvalid username list: " + str(valid_username_list)
+                #return redirect("/compad")
         else:
             compose_composit = "<b>to</b>: " + str(compose_recipient) + "<br /><b>from</b>: " + str(compose_sender) + "<br /><b>message</b>: "  + str(compose_message)
             return "<h1>POSTED!</h1><br />" + compose_composit
