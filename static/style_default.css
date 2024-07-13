@@ -156,13 +156,9 @@ a {
   vertical-align: text-top;
 }
 
-/*
 #compose_message {
-  vertical-align: text-top;
-  height: 100px;
-  width: 100%;
+  font-family: "Courier New", Courier, monospace;
 }
-*/
 
 /* saturated UI buttons */
 .ui_button,

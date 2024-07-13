@@ -57,7 +57,8 @@
                         <label for="compose_message">Message:</label>
                     </td>
                     <td>
-                        <textarea id="compose_message" name="compose_message" required rows="3" cols="93"></textarea>
+                        <textarea id="compose_message" name="compose_message" required rows="3" cols="68"
+                            style="resize: vertical;"></textarea>
                     </td>
                 </tr>
             </table>
@@ -68,7 +69,9 @@
     </form>
 </div>
 
-<div style="padding-top: 10px;">
+<!-- INBOX -->
+<div style="margin-top: 10px;" class="darker">
+    <h2>Inbox for {{ current_username }}</h2>
     <table class="dark_table">
 
         <tr style="text-align:left">
@@ -78,14 +81,45 @@
         </tr>
 
         {% for message in user_messages %}
+        {% if message.fromUser != current_username %}
         <tr class="table_align_top">
             <td>{{ message.toUser }}</td>
             <td>{{ message.fromUser }}</td>
             <td>{{ message.message }}</td>
         </tr>
+        {% endif %}
         {% endfor %}
 
     </table>
+</div>
+
+<!-- OUTBOX -->
+<!-- starts collapsed, can be expanded by clicking -->
+<div style="margin-top: 10px;" class="darker">
+    <h2 class="cursor_pointer" onclick="collapseSegment('compad_outbox', 'compad_outbox_expand')">
+        Outbox
+        <img class="float_right" id="compad_outbox_expand" src="static\icon-arrow-down.svg"
+            alt="expand/contract section" />
+    </h2>
+    <div class="collapsible" id="compad_outbox" style="display: none;">
+        <table class="dark_table">
+
+            <tr style="text-align:left">
+                <th>To</th>
+                <th>Message</th>
+            </tr>
+
+            {% for message in user_messages %}
+            {% if message.fromUser == current_username %}
+            <tr class="table_align_top">
+                <td>{{ message.toUser }}</td>
+                <td>{{ message.message }}</td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+
+        </table>
+    </div>
 </div>
 
 {% endblock %}
