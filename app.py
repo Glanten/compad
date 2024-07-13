@@ -364,7 +364,6 @@ def credits_send():
 def credits_receive():
     """Acquire credits from a unique credstick code"""
     if request.method == "POST":
-        # if user hits "send" on 'send credits' form
         # create variables from submitted form
         receive_code = request.form.get("input_credstick_code")
 
@@ -668,6 +667,17 @@ def compad():
             current_username=current_username,
             recipient_list=recipient_list,
             )
+
+# below function is ready, but no link currently exists to trigger it
+@app.route("/archive_message/<int:msg_id>", methods=['POST'])
+@login_required
+def archive_message(msg_id):
+    """Archive message to clean up inbox"""
+    current_user = session['user_id']
+    msg_variable = "msg" + str(current_user)
+    # change message's archive status to 1
+    db.execute("UPDATE ? SET archive = 1 WHERE msgid = ?", msg_variable, msg_id)
+    return redirect("/compad")
 
 #--- MISC PAGES ---#
 

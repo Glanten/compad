@@ -70,23 +70,38 @@
 </div>
 
 <!-- INBOX -->
+
+<!-- TO DO: ADD ARCHIVE BUTTONS -->
 <div style="margin-top: 10px;" class="darker">
     <h2>Inbox for {{ current_username }}</h2>
     <table class="dark_table">
 
         <tr style="text-align:left">
-            <th>To</th>
-            <th>From</th>
-            <th>Message</th>
+            <th>TO</th>
+            <th>FROM</th>
+            <th>MESSAGE</th>
+            <td style="text-align: center;">ARCHIVE</td>
         </tr>
 
         {% for message in user_messages %}
         {% if message.fromUser != current_username %}
+        {% if message.archive != 1 %}
         <tr class="table_align_top">
             <td>{{ message.toUser }}</td>
             <td>{{ message.fromUser }}</td>
             <td>{{ message.message }}</td>
+            <td style="text-align: center;">
+                <form action="{{ url_for('archive_message', msg_id=message.msgId)}}" method="POST"
+                    style="display: inline;">
+                    <label hidden for="archive_message_{{ message.msgid }}">Delete {{ message.msgid }}</label>
+                    <button type="submit" class="cursor_pointer" style="border: none; background: none;"
+                        id="archive_message_{{ message.msgid }}">
+                        <img src="static\icon-archive.svg" alt="archive" />
+                    </button>
+                </form>
+            </td>
         </tr>
+        {% endif %}
         {% endif %}
         {% endfor %}
 
@@ -105,16 +120,50 @@
         <table class="dark_table">
 
             <tr style="text-align:left">
-                <th>To</th>
-                <th>Message</th>
+                <th>TO</th>
+                <th>MESSAGE</th>
             </tr>
 
             {% for message in user_messages %}
             {% if message.fromUser == current_username %}
             <tr class="table_align_top">
                 <td>{{ message.toUser }}</td>
+
                 <td>{{ message.message }}</td>
             </tr>
+            {% endif %}
+            {% endfor %}
+
+        </table>
+    </div>
+</div>
+
+<!-- ARCHIVE -->
+<!-- starts collapsed, can be expanded by clicking -->
+<div style="margin-top: 10px;" class="darker">
+    <h2 class="cursor_pointer" onclick="collapseSegment('compad_archive', 'compad_archive_expand')">
+        Archive
+        <img class="float_right" id="compad_archive_expand" src="static\icon-arrow-down.svg"
+            alt="expand/contract section" />
+    </h2>
+    <div class="collapsible" id="compad_archive" style="display: none;">
+        <table class="dark_table">
+
+            <tr style="text-align:left">
+                <th>TO</th>
+                <th>FROM</th>
+                <th>MESSAGE</th>
+            </tr>
+
+            {% for message in user_messages %}
+            {% if message.fromUser != current_username %}
+            {% if message.archive == 1 %}
+            <tr class="table_align_top">
+                <td>{{ message.toUser }}</td>
+                <td>{{ message.fromUser }}</td>
+                <td>{{ message.message }}</td>
+            </tr>
+            {% endif %}
             {% endif %}
             {% endfor %}
 
