@@ -202,3 +202,20 @@ select {
   font-family: "Courier New", Courier, monospace;
   padding: 6px;
 }
+
+/* notification count */
+.notifications {
+  font-size: smaller;
+  position: absolute;
+  top: -3px;
+  right: -25px;
+  padding: 5px 10px;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.33);
+  /*
+  border-radius: 25%;
+  background-color: rgba(0, 0, 0, 0.33);
+  */
+  color: #f3f3f3;
+  z-index: 2;
+}

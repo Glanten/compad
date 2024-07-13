@@ -23,7 +23,7 @@ def inject_admin_status():
     return dict(admin=admin_status)
 
 
-# Ensure content is always fresh and not an old (potentially outdated) cached version
+# ensure content is always fresh and not an old (potentially outdated) cached version
 @app.after_request
 def after_request(response):
     """Ensure responses aren't cached"""
@@ -32,6 +32,25 @@ def after_request(response):
     response.headers["Pragma"] = "no-cache"
     return response
 
+# provide count of unread messages in compad inbox
+@app.context_processor
+def inject_read_state_count():
+    """Get count of unread messages for every page"""
+    # safely define the total_unread_messages variable
+    total_unread_messages = 0
+    if 'user_id' in session:
+        logged_in_user_id = session['user_id']
+        user_msg_table = f"msg{logged_in_user_id}"
+
+        # construct SQL query
+        read_state_query = f"SELECT COUNT(readState) FROM {user_msg_table} WHERE readState = 0;"
+        unread_result = db.execute(read_state_query)
+
+        if unread_result and unread_result[0]['COUNT(readState)'] is not None:
+            total_unread_messages = unread_result[0]['COUNT(readState)']
+
+    # return the value as a dict
+    return {'total_unread_messages': total_unread_messages}
 
 #++++++++++++++++++++++++++#
 #+++ Flask and Webpages +++#
@@ -652,7 +671,10 @@ def compad():
         # method must = GET (i.e. link or URL entry) - standard page display with messages, compose, etc.
         user_msg_variable = "msg" + str(current_user)
         current_username = db.execute("SELECT username FROM users WHERE id = ?", session['user_id'])[0]['username']
-        user_messages = db.execute("SELECT * FROM ? WHERE userId = ?", user_msg_variable, current_user)
+        user_messages = db.execute("SELECT * FROM ? WHERE userId = ? ORDER BY msgId DESC", user_msg_variable, current_user)
+        # mark all current messages as read
+        db.execute("UPDATE ? SET readState = 1 WHERE readState = 0", user_msg_variable)
+
         # list of characters in same campaign, for "send" list
         admin_status = session.get("admin", 0)
         if admin_status == 1:
