@@ -1,0 +1,78 @@
+body {
+  background-color: #392e40;
+  background-image: url("darkPurple.png");
+  background-repeat: repeat;
+  color: #f3f3f3;
+}
+
+/* main sections' styling */
+header {
+  background-color: rgba(0, 0, 0, 0.33);
+}
+
+main {
+  background-color: rgba(0, 0, 0, 0.33);
+}
+
+/* footer no longer required
+footer {
+  background-color: rgba(0, 0, 0, 0.33);
+}
+*/
+
+nav a {
+  background-color: rgba(0, 0, 0, 0.33);
+}
+
+#link_admin {
+  background-color: rgba(255, 251, 0, 0.33);
+}
+
+/* ++++++++++++++++++++++++++++++++ */
+/* individual element styles */
+
+/* for sections that should have shadowed background */
+.darker {
+  background-color: rgba(0, 0, 0, 0.33);
+}
+
+/* hyperlinks */
+a {
+  color: white;
+}
+
+/* tables (e.g. users in admin page) */
+.dark_table {
+  background-color: rgba(0, 0, 0, 0.33);
+}
+
+.dark_table tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.33);
+}
+
+/* saturated UI buttons */
+.ui_button,
+.warning_button {
+  color: #f3f3f3;
+  background-color: rgba(58, 47, 62, 1);
+}
+
+.ui_button:hover {
+  background-color: rgba(83, 73, 86, 1);
+  color: #fdfdfd;
+}
+
+.warning_button:hover {
+  background-color: rgba(62, 50, 47, 1);
+  color: #fdfdfd;
+}
+
+.ui_button:active {
+  background-color: rgba(132, 125, 134, 1);
+}
+
+/* notification count */
+.notifications {
+  background-color: rgba(0, 0, 0, 0.33);
+  color: #f3f3f3;
+}

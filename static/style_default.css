@@ -1,9 +1,5 @@
 body {
-  background-color: #392e40;
-  background-image: url("darkPurple.png");
-  background-repeat: repeat;
   font-family: "Courier New", Courier, monospace;
-  color: #f3f3f3;
 }
 
 /* main sections' styling */
@@ -12,7 +8,6 @@ header {
   left: 0;
   top: 0;
   width: 100%;
-  background-color: rgba(0, 0, 0, 0.33);
   padding: 20px;
   overflow: hidden;
   z-index: -1;
@@ -31,18 +26,15 @@ main {
   margin-left: auto;
   margin-right: auto;
   margin-top: 75px;
-  background-color: rgba(0, 0, 0, 0.33);
   padding: 20px;
 }
 
 /* footer no longer required
-
 footer {
   position: fixed;
   left: 0;
   bottom: 0;
   width: 100%;
-  background-color: rgba(0, 0, 0, 0.33);
   text-align: center;
   padding: 20px;
   z-index: -1;
@@ -67,7 +59,6 @@ nav a {
   font-size: 20px;
   color: #ffffff;
   /*  border-radius: 0 5px 5px 0; /* rounded corners on top- and bottom-right sides*/
-  background-color: rgba(0, 0, 0, 0.33);
 }
 
 nav a:hover {
@@ -90,7 +81,6 @@ nav a:hover {
 }
 #link_admin {
   top: 375px;
-  background-color: rgba(255, 251, 0, 0.33);
 }
 
 /* ++++++++++++++++++++++++++++++++ */
@@ -104,7 +94,6 @@ nav a:hover {
 
 /* for sections that should have shadowed background */
 .darker {
-  background-color: rgba(0, 0, 0, 0.33);
   padding: 15px;
   margin-top: 5px;
   margin-bottom: 5px;
@@ -113,7 +102,6 @@ nav a:hover {
 /* hyperlinks */
 a {
   text-decoration: none;
-  color: white;
   font-weight: bold;
 }
 
@@ -138,7 +126,6 @@ a {
   border: none;
   border-spacing: 0px;
   width: 100%;
-  background-color: rgba(0, 0, 0, 0.33);
   padding: 10px;
   text-align: left;
 }
@@ -146,10 +133,6 @@ a {
 .dark_table td,
 .dark_table th {
   padding: 10px;
-}
-
-.dark_table tbody tr:hover {
-  background-color: rgba(0, 0, 0, 0.33);
 }
 
 .table_align_top {
@@ -168,23 +151,10 @@ a {
   text-align: center;
   cursor: pointer;
   outline: none;
-  color: #f3f3f3;
-  background-color: rgba(58, 47, 62, 1);
   border: none;
 }
 
-.ui_button:hover {
-  background-color: rgba(83, 73, 86, 1);
-  color: #fdfdfd;
-}
-
-.warning_button:hover {
-  background-color: rgba(62, 50, 47, 1);
-  color: #fdfdfd;
-}
-
 .ui_button:active {
-  background-color: rgba(132, 125, 134, 1);
   transform: translateY(4px);
 }
 
@@ -211,11 +181,5 @@ select {
   right: -25px;
   padding: 5px 10px;
   border-radius: 50%;
-  background-color: rgba(0, 0, 0, 0.33);
-  /*
-  border-radius: 25%;
-  background-color: rgba(0, 0, 0, 0.33);
-  */
-  color: #f3f3f3;
   z-index: 2;
 }
