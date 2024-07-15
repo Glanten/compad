@@ -1,5 +1,5 @@
 from cs50 import SQL
-from flask import Flask, redirect, render_template, request, session
+from flask import Flask, redirect, render_template, request, session, send_file
 from flask_session import Session
 import os
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -594,6 +594,31 @@ def remove_starmap(starmap_id, user_id):
     else:
         db.execute("DELETE FROM starmapinventory WHERE starmapid = ? AND userid = ?", starmap_id, user_id)
         return redirect("/admin")
+
+# secure starmaps so they can only be viewed by people with the correct inventory (or admins)
+@app.route("/static/starmaps/<starmap_url>", methods=['GET'])
+@login_required
+def view_starmap(starmap_url):
+    """Ensure only admins and authorised users have access to starmaps"""
+    # define filepath
+    path_to_starmap = os.path.join(app.root_path, 'static', 'starmaps', starmap_url)
+
+    # check if user has starmap in their inventory
+    current_user = session['user_id']
+    map_ids_in_inventory = db.execute("SELECT starmapid FROM starmapinventory WHERE userid = ?", current_user)
+    user_map_inventory = []
+    for item in map_ids_in_inventory:
+        user_map_inventory.append(item["starmapid"])
+    
+    users_maps = []
+    for row in user_map_inventory:
+        users_maps.append(db.execute("SELECT url FROM starmaps WHERE id = ?", row)[0]['url'])
+
+    # only allow access to starmap via direct URL if starmap is in user's inventory
+    if session.get("admin") == 1 or starmap_url in users_maps:
+        return send_file(path_to_starmap, mimetype='image/jpeg')
+    else:
+        return render_template("error.html", error_message="you do not have access to this starmap")
 
 #--- DID YOU GET MY WAVE? ---#
 
