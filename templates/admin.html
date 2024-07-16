@@ -246,13 +246,13 @@
                 {% for starmap_db_entry in starmap_db %}
                 <tr>
                     <td>
-                        <a href="static/starmaps/{{ starmap_db_entry.url }}" target="_blank">{{ starmap_db_entry.url
-                            }}</a>
+                        <a href="static/starmaps/{{ starmap_db_entry.url }}" target="_blank">
+                            {{ starmap_db_entry.url }}</a>
                     </td>
                     <td>
                         {{ starmap_db_entry.code }}
                     </td>
-                    <form action="{{ url_for('edit_starmap', starmap_id=starmap_db_entry.id)}}" method="POST"
+                    <form action="{{ url_for('edit_starmap', starmap_id=starmap_db_entry.id )}}" method="POST"
                         style="display: inline;">
                         <td>
                             <!--<label hidden for="edit_starmap_code">Code for new starmap</label>-->

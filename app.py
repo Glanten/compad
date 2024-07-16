@@ -33,27 +33,39 @@ def after_request(response):
     return response
 
 # provide count of unread messages in compad inbox
+# provide user's colour scheme
 @app.context_processor
-def inject_read_state_count():
-    """Get count of unread messages for every page"""
-    # safely define the total_unread_messages variable
+def inject_user_variables():
+    """Get user's colour chosen scheme and get count of unread messages for every page"""
+    # safely define/default variables
     total_unread_messages = 0
+    user_colour_scheme = "colour_scheme_purplestars.css"
+
     if 'user_id' in session:
         logged_in_user_id = session['user_id']
         user_msg_table = f"msg{logged_in_user_id}"
 
-        # construct SQL query
+        # construct SQL query for compad message count
         read_state_query = f"SELECT COUNT(readState) FROM {user_msg_table} WHERE readState = 0;"
         unread_result = db.execute(read_state_query)
 
+        # construct SQL query for colour scheme
+        visuals_query = f"SELECT scheme FROM users WHERE id = {logged_in_user_id}"
+        visual_result = db.execute(visuals_query)
+
+        # error checking and formatting for compad message count
         if unread_result and unread_result[0]['COUNT(readState)'] is not None:
             if unread_result[0]['COUNT(readState)'] > 99:
                 total_unread_messages = "99+"
             else:
                 total_unread_messages = unread_result[0]['COUNT(readState)']
 
-    # return the value as a dict
-    return {'total_unread_messages': total_unread_messages}
+        # error checking and formatting for colour scheme
+        if visual_result and visual_result[0]['scheme'] is not None:
+            user_colour_scheme = visual_result[0]['scheme']
+
+    # return the values as dicts
+    return {'total_unread_messages': total_unread_messages, 'user_colour_scheme': user_colour_scheme}
 
 #++++++++++++++++++++++++++#
 #+++ Flask and Webpages +++#
