@@ -309,6 +309,18 @@ def account():
         return redirect("/")
     else:
         return render_template("account.html")
+    
+@app.route("/change_scheme", methods=['POST'])
+@login_required
+def change_scheme():
+    """Change site colour scheme for user"""
+    # get list of stylesheets
+    static_folder = os.listdir(os.path.join(app.static_folder))
+    stylesheets = [file for file in static_folder if file.endswith('.css')]
+    # TO DO - DO NOT LIST 'style_default.css'
+
+    # TO DO - CHANGE STYLESHEET
+    return str(stylesheets)
 
 #--- CREDITS ---#
 

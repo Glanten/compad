@@ -9,29 +9,58 @@
 
 <h1>Account</h1>
 
-<form action="/account" method="post">
-    <fieldset>
-        <legend>
-            <h2>
-                Change password
-            </h2>
-        </legend>
+<!-- CHANGE PASSWORD -->
 
-        <p>
-            <label for="account_old_password">Old password:</label>
-            <input name="old_password" placeholder="Old password" type="password" id="account_old_password">
-        </p>
+<div class="darker">
+    <form action="/account" method="post">
+        <fieldset>
+            <legend>
+                <h2>
+                    Change password
+                </h2>
+            </legend>
 
+            <p>
+                <label for="account_old_password">Old password:</label>
+                <input name="old_password" placeholder="Old password" type="password" id="account_old_password">
+            </p>
 
-        <p>
-            <label for="account_new_password">New password:</label>
-            <input name="new_password" placeholder="New password" type="password" id="account_new_password">
-            <label hidden for="account_confirm_password">New password:</label>
-            <input name="confirmation" placeholder="Repeat new password" type="password" id="account_confirm_password">
-        </p>
-        <label hidden for="account_change_password_button">Change password</label>
-        <button type="submit" class="ui_button" id="account_change_password_button">Change Password</button>
-    </fieldset>
-</form>
+            <p>
+                <label for="account_new_password">New password:</label>
+                <input name="new_password" placeholder="New password" type="password" id="account_new_password">
+                <label hidden for="account_confirm_password">New password:</label>
+                <input name="confirmation" placeholder="Repeat new password" type="password"
+                    id="account_confirm_password">
+            </p>
+            <label hidden for="account_change_password_button">Change password</label>
+            <button type="submit" class="ui_button" id="account_change_password_button">Change Password</button>
+        </fieldset>
+    </form>
+</div>
+
+<!-- CHANGE SITE COLOUR SCHEME -->
+<div class="darker">
+    <form action="/change_scheme" method="post">
+        <fieldset>
+            <legend>
+                <h2>
+                    Compad Colour Scheme
+                </h2>
+            </legend>
+
+            <p>
+                <label for="scheme_drop_down">Scheme</label>
+                <select id="scheme_drop_down">
+                    <option>Purple Stars</option>
+                </select>
+            </p>
+
+            <p>
+                <label hidden for="account_change_scheme_button">Apply Scheme</label>
+                <button type="submit" class="ui_button" id="account_change_scheme_button">Apply Scheme</button>
+            </p>
+        </fieldset>
+    </form>
+</div>
 
 {% endblock %}
