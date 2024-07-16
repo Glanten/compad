@@ -47,7 +47,10 @@ def inject_read_state_count():
         unread_result = db.execute(read_state_query)
 
         if unread_result and unread_result[0]['COUNT(readState)'] is not None:
-            total_unread_messages = unread_result[0]['COUNT(readState)']
+            if unread_result[0]['COUNT(readState)'] > 99:
+                total_unread_messages = "99+"
+            else:
+                total_unread_messages = unread_result[0]['COUNT(readState)']
 
     # return the value as a dict
     return {'total_unread_messages': total_unread_messages}
