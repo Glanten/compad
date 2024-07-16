@@ -49,9 +49,16 @@
             </legend>
 
             <p>
-                <label for="scheme_drop_down">Scheme</label>
-                <select id="scheme_drop_down">
-                    <option>Purple Stars</option>
+                <label for="scheme_drop_down">Scheme:</label>
+                <select id="scheme_drop_down" name="scheme_drop_down">
+                    <option disabled selected>
+                        Select scheme
+                    </option>
+                    {% for sheet in stylesheets %}
+                    <option value="{{ sheet }}" name="{{ sheet }}">
+                        {{ sheet|replace("colour_scheme_", n)|replace(".css",n) }}
+                    </option>
+                    {% endfor %}
                 </select>
             </p>
 

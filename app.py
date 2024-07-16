@@ -308,7 +308,16 @@ def account():
         db.execute("UPDATE users SET hash = ? WHERE id = ?", new_password, session['user_id'])
         return redirect("/")
     else:
-        return render_template("account.html")
+        # method was GET, therefore arrived by URL or entering address manually
+        # get list of stylesheets
+        static_folder = os.listdir(os.path.join(app.static_folder))
+        stylesheets = []
+        for sheet in static_folder:
+            if sheet.endswith('.css'):
+                if sheet != 'style_default.css':
+                    stylesheets.append(sheet)
+        
+        return render_template("account.html", stylesheets=stylesheets)
     
 @app.route("/change_scheme", methods=['POST'])
 @login_required
@@ -316,11 +325,25 @@ def change_scheme():
     """Change site colour scheme for user"""
     # get list of stylesheets
     static_folder = os.listdir(os.path.join(app.static_folder))
-    stylesheets = [file for file in static_folder if file.endswith('.css')]
-    # TO DO - DO NOT LIST 'style_default.css'
+    stylesheets = []
+    for sheet in static_folder:
+        if sheet.endswith('.css'):
+            if sheet != 'style_default.css':
+                stylesheets.append(sheet)
+    
+    # error checking
+    if not request.form.get("scheme_drop_down"):
+        return render_template("error.html", error_message="no scheme submitted")
+    else:
+        selected_style = request.form.get("scheme_drop_down")
+        # does selected style exist?
+        if selected_style not in stylesheets:
+            return render_template("error.html", error_message="colour scheme not found")
 
-    # TO DO - CHANGE STYLESHEET
-    return str(stylesheets)
+    # change stylesheet
+    db.execute("UPDATE users SET scheme = ? WHERE id = ?", selected_style, session['user_id'])
+
+    return redirect("/account")
 
 #--- CREDITS ---#
 

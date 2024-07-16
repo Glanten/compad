@@ -1,0 +1,89 @@
+body {
+  background-color: #8f8f8f;
+  color: #f5f5f5;
+}
+
+/* main sections' styling */
+header {
+  background-color: rgba(0, 0, 0, 0.33);
+}
+
+main {
+  background-color: rgba(0, 0, 0, 0.33);
+}
+
+/* footer no longer required
+footer {
+  background-color: rgba(0, 0, 0, 0.33);
+}
+*/
+
+nav a {
+  background-color: rgba(0, 0, 0, 0.33);
+}
+
+#link_admin {
+  background-color: rgba(230, 81, 0, 0.33);
+}
+
+/* ++++++++++++++++++++++++++++++++ */
+/* individual element styles */
+
+h1 {
+  color: #f5f5f5;
+}
+
+/* for sections that should have shadowed background */
+.darker {
+  background-color: rgba(0, 0, 0, 0.33);
+  color: #f5f5f5;
+}
+
+/* hyperlinks */
+a {
+  color: #f5f5f5;
+}
+
+/* tables (e.g. users in admin page) */
+.dark_table {
+  background-color: rgba(0, 0, 0, 0.33);
+  color: #f5f5f5;
+}
+
+.dark_table tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.33);
+}
+
+/* saturated UI buttons */
+.ui_button,
+.warning_button {
+  color: #f5f5f5;
+  background-color: #8f8f8f;
+}
+
+.ui_button:hover {
+  background-color: #292929;
+  color: #f5f5f5;
+}
+
+.warning_button:hover {
+  background-color: #292929;
+  color: #424242;
+}
+
+.ui_button:active {
+  background-color: #292929;
+}
+
+/* notification count */
+.notifications {
+  background-color: rgba(0, 0, 0, 0.33);
+  color: #424242;
+}
+
+select,
+input,
+textarea {
+  background-color: #2e2e2e;
+  color: #f5f5f5;
+}

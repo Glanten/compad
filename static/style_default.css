@@ -141,6 +141,7 @@ a {
 
 #compose_message {
   font-family: "Courier New", Courier, monospace;
+  font-size: 16px;
 }
 
 /* saturated UI buttons */
