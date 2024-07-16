@@ -22,7 +22,6 @@ def inject_admin_status():
     admin_status = session.get("admin", 0)
     return dict(admin=admin_status)
 
-
 # ensure content is always fresh and not an old (potentially outdated) cached version
 @app.after_request
 def after_request(response):
@@ -39,7 +38,7 @@ def inject_user_variables():
     """Get user's colour chosen scheme and get count of unread messages for every page"""
     # safely define/default variables
     total_unread_messages = 0
-    user_colour_scheme = "colour_scheme_purplestars.css"
+    user_colour_scheme = "colour_scheme_purple.css"
 
     if 'user_id' in session:
         logged_in_user_id = session['user_id']
