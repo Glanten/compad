@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block head_block %}
+{% endblock %}
+
+{% block page_title %}{{ svati_data.name }}{% endblock %}
+
+{% block main %}
+
+<h1>{{ svati_data.position }} - {{ svati_data.name }}</h1>
+
+<p style="color: chartreuse;">Svati Data: {{ svati_data }}</p>
+
+<div>
+    <div class="darker">
+        <!-- vital statistics -->
+        <h2>System Overview</h2>
+        <p>
+            <strong>Star</strong>: {{ svati_data.star }}
+        </p>
+        <p>
+            <strong>Dominant Faction</strong>: {{ svati_data.faction }}
+        </p>
+        <p>
+            {{ svati_data.notes }}
+        </p>
+    </div>
+
+    <div class="darker">
+        <!-- celestial bodies -->
+        <h2>Celestial Bodies</h2>
+        {% for body in svati_data.bodies %}
+
+        <p style="color: chartreuse;">
+            {{ body }}
+        </p>
+
+        <p>
+            {% for key in body %}
+            {% if key == "name" %}
+            <strong>{{ body.name }}</strong><br />
+            {% endif %}
+            {% if key == "type" %}
+            {% if body.type != "listening posts" %}
+            <strong>Type</strong>: {{ body.type }}, {{ body.subtype }}
+            {% endif %}
+            {% endif %}
+            {% endfor %}
+        </p>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}

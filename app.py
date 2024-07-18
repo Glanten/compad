@@ -1,6 +1,7 @@
 from cs50 import SQL
 from flask import Flask, redirect, render_template, request, session, send_file
 from flask_session import Session
+# import json # this will be used to store star system data in the future
 import os
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -781,3 +782,29 @@ def archive_message(msg_id):
 @app.errorhandler(404)
 def notfound(e):
     return render_template("error.html", error_message=e)
+
+# star system test page
+@app.route("/systemtest")
+@login_required
+def systemtest():
+    svati_data = {
+        "name": "Svati",
+        "position": 1312,
+        "faction": "Aurora Pioneering Division",
+        "notes": "The largest Galactic Dynamics colony in the Ithikan Frontier.",
+        "star": "orange dwarf",# superfluous once you can take this data from the bodies list
+        "bodies": [
+            {"name": "Svati", "type": "star", "subtype": "orange dwarf"},
+            {"name": "SV001", "type": "planet", "subtype": "rocky planet", "population": 0},
+            {"name": "Svati Prime", "type": "planet", "subtype": "rocky planet", "population": 77000000},
+            {"name": "SV003", "type": "planet", "subtype": "rocky planet", "population": 0},
+            {"name": "Jata", "type": "planet", "subtype": "gas giant", "population": 0},
+            {"name": "Atargatis", "type": "planet", "subtype": "gas giant", "population": 0},
+            {"name": "SV006", "type": "planet", "subtype": "ice giant", "population": 0},
+            {"name": "Svati listening posts", "type": "listening posts", "subtype": "", "posts": [
+                "Gorgon listening post", "Eridu listening post", "Ander's Tribute listening post"
+            ]
+            }
+        ]
+    }
+    return render_template("systemtest.html", svati_data=svati_data)
