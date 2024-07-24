@@ -63,6 +63,16 @@ def inject_user_variables():
         # error checking and formatting for colour scheme
         if visual_result and visual_result[0]['scheme'] is not None:
             user_colour_scheme = visual_result[0]['scheme']
+            # THIS BIT IS NEW!
+            # get list of stylesheets
+            static_folder = os.listdir(os.path.join(app.static_folder))
+            stylesheets = []
+            for sheet in static_folder:
+                if sheet.endswith('.css'):
+                    if sheet != 'style_default.css':
+                        stylesheets.append(sheet)
+            if user_colour_scheme not in stylesheets:
+                user_colour_scheme = "colour_scheme_purple.css"
 
     # return the values as dicts
     return {'total_unread_messages': total_unread_messages, 'user_colour_scheme': user_colour_scheme}
@@ -220,8 +230,12 @@ def register():
         else:
             hashed_password = generate_password_hash(
                 request.form.get("password"), method='scrypt', salt_length=16)
-            db.execute("INSERT INTO users (username, hash) VALUES(?, ?)",
-                       submitted_username, hashed_password)
+            default_colour_scheme = "colour_scheme_purple.css"
+            db.execute(
+                "INSERT INTO users (username, hash, scheme) VALUES(?, ?, ?)",
+                submitted_username,
+                hashed_password,
+                default_colour_scheme)
             # create compad (i.e. mail) table for user in database
             this_user_id = db.execute("SELECT id FROM users WHERE username = ?", submitted_username)[0]['id']
             new_user_compad_tablename = "msg" + str(this_user_id)
