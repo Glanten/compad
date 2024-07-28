@@ -13,10 +13,28 @@
 
 <div>
     <div class="darker">
-        <!-- vital statistics -->
+        <!-- vital statistics, including primary stellar body/bodies -->
         <h2>System Overview</h2>
         <p>
-            <strong>Star</strong>: {{ svati_data.star }}
+            {% set starcount = svati_data.bodies|selectattr("type", "equalto", "star")|list %}
+
+            {% if starcount|length > 0 %}
+            <strong>
+                {{ "Star" if starcount|length == 1 else "Stars" }}:
+            </strong>
+
+            {% if starcount|length == 1 %}
+            {{ starcount[0].name }}, {{ starcount[0].subtype }}
+            {% else %}
+            {% for star in starcount %}
+            {{ star.name }}, {{ star.subtype }}{% if not loop.last %}; {% endif %}
+            {% endfor %}
+            {% endif %}
+
+            {% else %}
+            This system has no star
+            {% endif %}
+
         </p>
         <p>
             <strong>Dominant Faction</strong>: {{ svati_data.faction }}
@@ -29,25 +47,46 @@
     <div class="darker">
         <!-- celestial bodies -->
         <h2>Celestial Bodies</h2>
-        {% for body in svati_data.bodies %}
+        <table style="margin-left: auto; margin-right: auto;">
+            {% for body in svati_data.bodies %}
+            <tr>
+                {% if body.type != 'star' %}
+                <td style="padding-right: 20px;">
+                    <div class="
+                    {% if body.subtype == 'rocky planet' %}
+                    rocky_planet
+                    {% elif body.subtype == 'gas giant' %}
+                    gas_giant
+                    {% elif body.subtype == 'ice giant' %}
+                    ice_giant
+                    {% elif body.subtype == 'asteroid' %}
+                    asteroid
+                    {% elif body.subtype == 'station' %}
+                    space_station
+                    {% endif %}
+                    ">
+                    </div>
+                </td>
+                <td>
+                    <p>
+                        {% for key in body %}
 
-        <p style="color: chartreuse;">
-            {{ body }}
-        </p>
+                        {% if key == "name" %}
+                        <strong>{{ body.name }}</strong><br />
+                        {% endif %}
 
-        <p>
-            {% for key in body %}
-            {% if key == "name" %}
-            <strong>{{ body.name }}</strong><br />
-            {% endif %}
-            {% if key == "type" %}
-            {% if body.type != "listening posts" %}
-            <strong>Type</strong>: {{ body.type }}, {{ body.subtype }}
-            {% endif %}
-            {% endif %}
+                        {% if key == "type" %}
+                        <strong>Type</strong>: {{ body.subtype }}
+                        <br /><strong>Population</strong>: {{ "{:,}".format(body.population) }}
+                        {% endif %}
+
+                        {% endfor %}
+                    </p>
+                </td>
+                {% endif %}
+            </tr>
             {% endfor %}
-        </p>
-        {% endfor %}
+        </table>
     </div>
 </div>
 

@@ -184,3 +184,38 @@ select {
   border-radius: 50%;
   z-index: 2;
 }
+
+/* starsystem planet types */
+.rocky_planet,
+.gas_giant,
+.ice_giant,
+.asteroid,
+.space_station {
+  border-radius: 50%;
+  float: right;
+}
+
+.rocky_planet {
+  width: 30px;
+  height: 30px;
+}
+
+.gas_giant {
+  width: 60px;
+  height: 60px;
+}
+
+.ice_giant {
+  width: 40px;
+  height: 40px;
+}
+
+.asteroid {
+  width: 15px;
+  height: 15px;
+}
+
+.space_station {
+  width: 5px;
+  height: 5px;
+}

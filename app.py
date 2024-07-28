@@ -804,9 +804,8 @@ def systemtest():
     svati_data = {
         "name": "Svati",
         "position": 1312,
-        "faction": "Aurora Pioneering Division",
-        "notes": "The largest Galactic Dynamics colony in the Ithikan Frontier.",
-        "star": "orange dwarf",# superfluous once you can take this data from the bodies list
+        "faction": "Aurora Pioneering Division, Galactic Dynamics",
+        "notes": "The largest Galactic Dynamics colony in the Ithikan Frontier",
         "bodies": [
             {"name": "Svati", "type": "star", "subtype": "orange dwarf"},
             {"name": "SV001", "type": "planet", "subtype": "rocky planet", "population": 0},
@@ -815,10 +814,8 @@ def systemtest():
             {"name": "Jata", "type": "planet", "subtype": "gas giant", "population": 0},
             {"name": "Atargatis", "type": "planet", "subtype": "gas giant", "population": 0},
             {"name": "SV006", "type": "planet", "subtype": "ice giant", "population": 0},
-            {"name": "Svati listening posts", "type": "listening posts", "subtype": "", "posts": [
-                "Gorgon listening post", "Eridu listening post", "Ander's Tribute listening post"
-            ]
-            }
+            {"name": "test asteroid", "type": "planet", "subtype": "asteroid", "population": 0},
+            {"name": "test station", "type": "planet", "subtype": "station", "population": 0},
         ]
     }
     return render_template("systemtest.html", svati_data=svati_data)

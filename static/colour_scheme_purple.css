@@ -76,3 +76,12 @@ a {
   background-color: rgba(0, 0, 0, 0.33);
   color: #f3f3f3;
 }
+
+/* starsystem planet types */
+.rocky_planet,
+.gas_giant,
+.ice_giant,
+.asteroid,
+.space_station {
+  background: white;
+}

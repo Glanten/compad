@@ -87,3 +87,12 @@ textarea {
   background-color: #330000;
   color: #cc0000;
 }
+
+/* starsystem planet types */
+.rocky_planet,
+.gas_giant,
+.ice_giant,
+.asteroid,
+.space_station {
+  background: #cc0000;
+}
