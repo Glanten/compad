@@ -825,18 +825,49 @@ def systemtest():
 def new_star_system():
     """Create new star system as JSON object and store in database"""
     # ERROR CHECKING
+    # check system_name field
+    if not request.form.get("new_system_name"):
+        return render_template("error.html", error_message="no system name detected")
+    else:
+        system_name = str(request.form.get("new_system_name"))
 
-    system_name = str(request.form.get("new_system_name"))
+    # check system_position field
+    if not request.form.get("new_system_coordinates"):
+        return render_template("error.html", error_message="no system coordinates detected")
+    else:
+        try:
+            system_position = int(request.form.get("new_system_coordinates"))
+        except ValueError:
+            return render_template("error.html", error_message="system coordinates formatted incorrectly")
+    
+    if system_position < 0 or system_position > 9999:
+        return render_template("error.html", error_message="system coordinates outside operating parameters")
 
-    system_position = request.form.get("new_system_coordinates")
+    # check system_faction field
+    if not request.form.get("new_system_faction"):
+        return render_template("error.html", error_message="no system faction detected")
+    else:
+        system_faction = str(request.form.get("new_system_faction"))
 
+    # check system_notes field
+    if not request.form.get("new_system_notes"):
+        return render_template("error.html", error_message="no system description found")
+    else:
+        system_notes = str(request.form.get("new_system_notes"))
+
+    # create unique name for database entry
     unique_system_name = str(system_position) + " - " + system_name
 
-    system_faction = request.form.get("new_system_faction")
-
-    system_notes = request.form.get("new_system_notes")
+    # check unique name does not already exist in database
+    database_tables = db.execute("SELECT name FROM sqlite_master WHERE TYPE='table'")
+    table_names = []
+    for table in database_tables:
+        table_names.append(table["name"])
+    
+    if unique_system_name in table_names:
+        return render_template("error.html", error_message="system designation already exists in database")
     
     # testing
-    form_input = "Designation: " + unique_system_name + "<br />Name: " + str(system_name) + "<br />Coordinates: " + str(system_position) + "<br />Faction: " + str(system_faction) + "<br />Notes: " + str(system_notes)
+    form_input = "Designation: " + unique_system_name + "<br />Name: " + str(system_name) + "<br />Coordinates: " + str(system_position) + "<br />Faction: " + str(system_faction) + "<br />Notes: " + str(system_notes) + "<p>" + str(table_names) + "</p>"
 
     return form_input
