@@ -77,7 +77,11 @@
 
                         {% if key == "type" %}
                         <strong>Type</strong>: {{ body.subtype }}
+
+                        {% if body.population > 0 %}
                         <br /><strong>Population</strong>: {{ "{:,}".format(body.population) }}
+                        {% endif %}
+
                         {% endif %}
 
                         {% endfor %}

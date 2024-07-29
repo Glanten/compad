@@ -283,7 +283,76 @@
             alt="expand/contract section" />
     </h2>
     <div class="collapsible" id="admin_systems">
-        <p>Create star system entries here (details TBD)</p>
+        <form action="/new_star_system" method="post">
+            <fieldset>
+                <legend>
+                    <h3>Create new star system</h3>
+                </legend>
+                <table>
+                    <tr>
+                        <td>
+                            <label for="new_system_name">
+                                <img src="static/icon-label.svg" alt="Name" />
+                            </label>
+                        </td>
+                        <td>
+                            <input autocomplete="off" name="new_system_name" id="new_system_name"
+                                placeholder="System name" type="text" />
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <label for="new_system_coordinates">
+                                <img src="static/icon-location.svg" alt="Coordinates" />
+                            </label>
+                        </td>
+                        <td>
+                            <input autocomplete="off" name="new_system_coordinates" id="new_system_coordinates"
+                                placeholder="0000" type="number" min="0000" max="9999" />
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <label for="new_system_faction">
+                                <img src="static/icon-faction.svg" alt="Faction" />
+                            </label>
+                        </td>
+                        <td>
+                            <input autocomplete="off" name="new_system_faction" id="new_system_faction"
+                                placeholder="Dominant faction" type="text" />
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td>
+                            <label for="new_system_notes">
+                                <img src="static/icon-document.svg" alt="Short description" />
+                            </label>
+                        </td>
+                        <td>
+                            <input autocomplete="off" name="new_system_notes" id="new_system_notes"
+                                placeholder="Short description" type="text" />
+                        </td>
+                    </tr>
+
+                </table>
+
+                <p>
+                    <label hidden for="new_system_button">Create new star system</label>
+                    <button type="submit" class="ui_button" id="new_system_button">
+                        Create system
+                    </button>
+
+                    <label hidden for="new_system_reset">Reset star system form</label>
+                    <button type="reset" class="warning_button" id="new_system_reset">
+                        Reset
+                    </button>
+                </p>
+            </fieldset>
+        </form>
+
     </div>
 </div>
 

@@ -819,3 +819,19 @@ def systemtest():
         ]
     }
     return render_template("systemtest.html", svati_data=svati_data)
+
+@app.route("/new_star_system", methods=['POST'])
+@login_required
+def new_star_system():
+    """Create new star system as JSON object and store in database"""
+    
+    # testing
+    system_name = request.form.get("new_system_name")
+    system_position = request.form.get("new_system_coordinates")
+    system_faction = request.form.get("new_system_faction")
+    system_notes = request.form.get("new_system_notes")
+    system_star = request.form.get("new_system_star")
+
+    form_input = "Name: " + str(system_name) + "<br />Coordinates: "  + str(system_position) + "<br />Faction: " + str(system_faction) + "<br />Notes: " + str(system_notes) + "<br />Star: " + str(system_star)
+
+    return form_input
