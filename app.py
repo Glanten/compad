@@ -109,7 +109,7 @@ def admin():
     starmap_directory = os.listdir(os.path.join(app.static_folder, 'starmaps'))
     starmap_urls = [file for file in starmap_directory if file.endswith('.jpg')]
     # get starmap database
-    starmap_db = db.execute("SELECT * FROM starmaps;")
+    starmap_db = db.execute("SELECT * FROM starmaps")
     # get starmap database urls
     starmap_db_urls = []
     for db_entry in starmap_db:
@@ -119,6 +119,8 @@ def admin():
     for instance in starmap_urls:
         if instance not in starmap_db_urls:
             unassigned_starmaps.append(instance)
+    # get star systems database
+    system_db = db.execute("SELECT designation, position, name FROM systems")
     
     return render_template(
         "admin.html",
@@ -126,12 +128,14 @@ def admin():
         credsticks_list=credsticks_list,
         unassigned_starmaps=unassigned_starmaps,
         starmap_db=starmap_db,
+        system_db=system_db
         )
 
 @app.route("/remove_user/<int:del_user_id>", methods=['POST'])
 @login_required
 def remove_user(del_user_id):
     """Delete user entry from database"""
+    # error checking?
     # remove entry from database according to submitted id
     db.execute("DELETE FROM users WHERE id = ?", del_user_id)
     # also remove user's message table from database
@@ -543,6 +547,59 @@ def remove_credstick(credstick_id):
 def system():
     return render_template("system.html")
 
+# CREATE NEW SYSTEM ENTRY (FROM ADMIN PAGE)
+@app.route("/new_star_system", methods=['POST'])
+@login_required
+def new_star_system():
+    """Create new star system as JSON object and store in database"""
+    # ERROR CHECKING
+    # check system_name field
+    if not request.form.get("new_system_name"):
+        return render_template("error.html", error_message="no system name detected")
+    else:
+        system_name = str(request.form.get("new_system_name"))
+
+    # check system_position field
+    if not request.form.get("new_system_coordinates"):
+        return render_template("error.html", error_message="no system coordinates detected")
+    else:
+        try:
+            system_position = int(request.form.get("new_system_coordinates"))
+        except ValueError:
+            return render_template("error.html", error_message="system coordinates formatted incorrectly")
+    
+    if system_position < 0 or system_position > 9999:
+        return render_template("error.html", error_message="system coordinates outside operating parameters")
+
+    # check system_faction field
+    if not request.form.get("new_system_faction"):
+        return render_template("error.html", error_message="no system faction detected")
+    else:
+        system_faction = str(request.form.get("new_system_faction"))
+
+    # check system_notes field
+    if not request.form.get("new_system_notes"):
+        return render_template("error.html", error_message="no system description found")
+    else:
+        system_notes = str(request.form.get("new_system_notes"))
+
+    # create unique name for database entry
+    system_designation = str(system_position) + "-" + system_name.replace(" ", "").lower()
+
+    # check unique name does not already exist in database
+    database_tables = db.execute("SELECT name FROM sqlite_master WHERE TYPE='table'")
+    table_names = []
+    for table in database_tables:
+        table_names.append(table["name"])
+    
+    if system_designation in table_names:
+        return render_template("error.html", error_message="system designation already exists in database")
+    
+    # write input fields to database
+    db.execute("INSERT INTO systems (designation, position, name, faction, notes) VALUES (?, ?, ?, ?, ?)", system_designation, system_position, system_name, system_faction, system_notes)
+
+    return redirect("/admin")
+
 #--- STARCHARTS ---#
 
 @app.route("/starmap")
@@ -797,7 +854,7 @@ def archive_message(msg_id):
 def notfound(e):
     return render_template("error.html", error_message=e)
 
-# star system test page
+# star system test pages
 @app.route("/systemtest")
 @login_required
 def systemtest():
@@ -820,54 +877,24 @@ def systemtest():
     }
     return render_template("systemtest.html", svati_data=svati_data)
 
-@app.route("/new_star_system", methods=['POST'])
+@app.route("/systemtest2")
 @login_required
-def new_star_system():
-    """Create new star system as JSON object and store in database"""
-    # ERROR CHECKING
-    # check system_name field
-    if not request.form.get("new_system_name"):
-        return render_template("error.html", error_message="no system name detected")
-    else:
-        system_name = str(request.form.get("new_system_name"))
+def systemtest2():
+    system_data = db.execute("SELECT * FROM systems")
+    return render_template("systemtest2.html", system_data=system_data)
 
-    # check system_position field
-    if not request.form.get("new_system_coordinates"):
-        return render_template("error.html", error_message="no system coordinates detected")
-    else:
-        try:
-            system_position = int(request.form.get("new_system_coordinates"))
-        except ValueError:
-            return render_template("error.html", error_message="system coordinates formatted incorrectly")
+@app.route("/edit_system/<str:system_designation>", methods=['GET', 'POST'])
+@login_required
+def edit_system(system_designation):
+    """Add, remove, and edit elements of a star system"""
+    # user got to URL by editing system form
+    if request.method == 'POST':
+
+        return redirect("/admin")
     
-    if system_position < 0 or system_position > 9999:
-        return render_template("error.html", error_message="system coordinates outside operating parameters")
-
-    # check system_faction field
-    if not request.form.get("new_system_faction"):
-        return render_template("error.html", error_message="no system faction detected")
+    # or user got to URL from clicking a link (or entering manually)
     else:
-        system_faction = str(request.form.get("new_system_faction"))
+        # take admin to edit_system page
+        #edited_system = db.execute("SELECT * FROM systems")
 
-    # check system_notes field
-    if not request.form.get("new_system_notes"):
-        return render_template("error.html", error_message="no system description found")
-    else:
-        system_notes = str(request.form.get("new_system_notes"))
-
-    # create unique name for database entry
-    unique_system_name = str(system_position) + " - " + system_name
-
-    # check unique name does not already exist in database
-    database_tables = db.execute("SELECT name FROM sqlite_master WHERE TYPE='table'")
-    table_names = []
-    for table in database_tables:
-        table_names.append(table["name"])
-    
-    if unique_system_name in table_names:
-        return render_template("error.html", error_message="system designation already exists in database")
-    
-    # testing
-    form_input = "Designation: " + unique_system_name + "<br />Name: " + str(system_name) + "<br />Coordinates: " + str(system_position) + "<br />Faction: " + str(system_faction) + "<br />Notes: " + str(system_notes) + "<p>" + str(table_names) + "</p>"
-
-    return form_input
+        return render_template("edit_system.html")

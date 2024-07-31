@@ -59,7 +59,7 @@
                     <th>ADMIN?</th>
                     <th>CAMPAIGN</th>
                     <th>CREDITS</th>
-                    <th>EDIT</th>
+                    <th style="text-align: center;">EDIT</th>
                 </tr>
             </thead>
             <tbody>
@@ -82,7 +82,7 @@
                     <td>
                         {{ entry.credits }}
                     </td>
-                    <td>
+                    <td style="text-align: center;">
                         <form action="{{ url_for('edit_user', edit_user_id=entry.id)}}" method="GET"
                             style="display: inline;">
                             <label hidden for="edit_user_{{ entry.username }}">Edit {{ entry.username }}</label>
@@ -169,8 +169,8 @@
                         {{ "redeemed" }}
                         {% endif %}
                     </td>
-                    <td>
-                        <form action="{{ url_for('remove_credstick', credstick_id=stick.id)}}" method="POST"
+                    <td style="text-align: center;">
+                        <form action=" {{ url_for('remove_credstick', credstick_id=stick.id)}}" method="POST"
                             style="display: inline;">
                             <label hidden for="remove_credstick_{{ stick.code }}">Delete {{ stick.code }}</label>
                             <button type="submit" class="cursor_pointer" style="border: none; background: none;"
@@ -236,9 +236,9 @@
             <thead>
                 <tr>
                     <th>URL</th>
-                    <th>Code</th>
-                    <th>New code</th>
-                    <th></th>
+                    <th>CODE</th>
+                    <th>NEW CODE</th>
+                    <th style="text-align: center;">EDIT</th>
                 </tr>
             </thead>
             <tbody>
@@ -259,7 +259,7 @@
                             <input autocomplete="off" name="new_starmap_code" placeholder="New code" type="text"
                                 id="new_code_starmap_{{ starmap_db_entry.id }}" />
                         </td>
-                        <td>
+                        <td style="text-align: center;">
                             <!--<label hidden for="edit_starmap{{ starmap_db_entry.id }}">Edit starmap {{ starmap_db_entry.id }} code</label>-->
                             <button type="submit" class="cursor_pointer" style="border: none; background: none;"
                                 id="edit_starmap_{{ starmap_db_entry.id }}">
@@ -353,6 +353,28 @@
             </fieldset>
         </form>
 
+        <!-- existing systems -->
+        <h3>System Database</h3>
+        <table class="dark_table">
+            <tr>
+                <th>
+                    SYSTEM
+                </th>
+                <th style="text-align: center;">
+                    EDIT
+                </th>
+            </tr>
+            {% for system in system_db %}
+            <tr>
+                <td>
+                    {{ system.position }} - {{ system.name }}
+                </td>
+                <td style="text-align: center;">
+                    <img src="static\icon-edit.svg" alt="edit" />
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
     </div>
 </div>
 
