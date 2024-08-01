@@ -120,7 +120,7 @@ def admin():
         if instance not in starmap_db_urls:
             unassigned_starmaps.append(instance)
     # get star systems database
-    system_db = db.execute("SELECT designation, position, name FROM systems")
+    system_db = db.execute("SELECT id, position, name FROM systems")
     
     return render_template(
         "admin.html",
@@ -599,21 +599,9 @@ def new_star_system():
         return render_template("error.html", error_message="no system description found")
     else:
         system_notes = str(request.form.get("new_system_notes"))
-
-    # create unique name for database entry
-    system_designation = str(system_position) + "-" + system_name.replace(" ", "").lower()
-
-    # check unique name does not already exist in database
-    database_tables = db.execute("SELECT name FROM sqlite_master WHERE TYPE='table'")
-    table_names = []
-    for table in database_tables:
-        table_names.append(table["name"])
-    
-    if system_designation in table_names:
-        return render_template("error.html", error_message="system designation already exists in database")
     
     # write input fields to database
-    db.execute("INSERT INTO systems (designation, position, name, faction, notes) VALUES (?, ?, ?, ?, ?)", system_designation, system_position, system_name, system_faction, system_notes)
+    db.execute("INSERT INTO systems (position, name, faction, notes) VALUES (?, ?, ?, ?)", system_position, system_name, system_faction, system_notes)
 
     return redirect("/admin")
 
@@ -896,9 +884,9 @@ def systemtest():
     }
     return render_template("systemtest.html", svati_data=svati_data)
 
-@app.route("/edit_system/<string:system_designation>", methods=['GET', 'POST'])
+@app.route("/edit_system/<int:system_id>", methods=['GET', 'POST'])
 @login_required
-def edit_system(system_designation):
+def edit_system(system_id):
     """Edit primary elements (name, coordinates, ruling faction, and description) of a star system"""
     # user got to URL by editing system form and hitting 'SUBMIT'
     if request.method == 'POST':
@@ -925,7 +913,7 @@ def edit_system(system_designation):
         if system_position < 0 or system_position > 9999:
             return render_template("error.html", error_message="system coordinates outside operating parameters")
         
-        system_coordinates_db = db.execute("SELECT position FROM systems WHERE NOT designation = ?", system_designation)
+        system_coordinates_db = db.execute("SELECT position FROM systems WHERE NOT id = ?", system_id)
         existing_system_coordinates = []
         for position in system_coordinates_db:
             existing_system_coordinates.append(position['position'])
@@ -946,29 +934,29 @@ def edit_system(system_designation):
     else:
         # take admin to edit_system page
         # error for pages that don't exist
-        system_designation_db = db.execute("SELECT designation FROM systems")
-        existing_system_designations = []
-        for designation in system_designation_db:
-            existing_system_designations.append(designation['designation'])
-        if system_designation not in existing_system_designations:
-            return render_template("error.html", error_message="THIS SYSTEM DOES NOT EXIST")
+        system_db = db.execute("SELECT id FROM systems")
+        existing_systems = []
+        for system in system_db:
+            existing_systems.append(system['id'])
+        if system_id not in existing_systems:
+            return render_template("error.html", error_message="NO SUCH SYSTEM")
         else:
-            edited_system = db.execute("SELECT * FROM systems WHERE designation = ?", system_designation)[0]
+            edited_system = db.execute("SELECT * FROM systems WHERE id = ?", system_id)[0]
 
         return render_template("edit_system.html", edited_system=edited_system)
     
-@app.route("/edit_planets/<string:system_designation>", methods=['POST'])
+@app.route("/edit_planets/<string:system_id>", methods=['POST'])
 @login_required
-def edit_planets(system_designation):
+def edit_planets(system_id):
     """Edit names, populations, etc. of existing planets in a system"""
     # TO DO
-    edited_system = db.execute("SELECT * FROM systems WHERE designation = ?", system_designation)[0]
+    edited_system = db.execute("SELECT * FROM systems WHERE id = ?", system_id)[0]
     return redirect("edit_system.html", edited_system=edited_system)
 
-@app.route("/new_planet/<string:system_designation>", methods=['POST'])
+@app.route("/new_planet/<string:system_id>", methods=['POST'])
 @login_required
-def new_planet(system_designation):
+def new_planet(system_id):
     """Create new planet in an existing system"""
     # TO DO
-    edited_system = db.execute("SELECT * FROM systems WHERE designation = ?", system_designation)[0]
+    edited_system = db.execute("SELECT * FROM systems WHERE id = ?", system_id)[0]
     return redirect("edit_system.html", edited_system=edited_system)

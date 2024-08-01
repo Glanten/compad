@@ -14,7 +14,7 @@
     {{ edited_system }}
 </p>
 
-<form action="{{ url_for('edit_system', system_designation=edited_system.designation) }}" method='POST'>
+<form action="{{ url_for('edit_system', system_id=edited_system.id) }}" method='POST'>
     <fieldset>
         <legend>
             <h2>System Attributes</h2>
@@ -86,7 +86,7 @@
 </form>
 
 <!-- JSON -->
-<form action="{{ url_for('edit_planets', system_designation=edited_system.designation) }}" method='POST'>
+<form action="{{ url_for('edit_planets', system_id=edited_system.id) }}" method='POST'>
     <fieldset>
         <legend>
             <h2>

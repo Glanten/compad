@@ -321,7 +321,7 @@
                         </td>
                         <td>
                             <input autocomplete="off" name="new_system_faction" id="new_system_faction"
-                                placeholder="Dominant faction" type="text" />
+                                placeholder="Dominant faction" type="text" size="40" />
                         </td>
                     </tr>
 
@@ -332,8 +332,9 @@
                             </label>
                         </td>
                         <td>
-                            <input autocomplete="off" name="new_system_notes" id="new_system_notes"
-                                placeholder="Short description" type="text" />
+                            <textarea id="new_system_notes" name="new_system_notes" rows="2" cols="50"
+                                class="compose_message" style="resize: vertical;"
+                                placeholder="Short description"></textarea>
                         </td>
                     </tr>
 
@@ -370,11 +371,13 @@
                     {{ system.position }} - {{ system.name }}
                 </td>
                 <td style="text-align: center;">
-                    <form action="{{ url_for('edit_system', system_designation=system.designation) }}" method="GET"
+                    <form action="{{ url_for('edit_system', system_id=system.id) }}" method="GET"
                         style="display: inline;">
-                        <label hidden for="edit_system_{{ system.designation }}">Edit {{ system.designation }}</label>
+                        <label hidden for="edit_system_{{ system.id }}">
+                            Edit {{ system.position }}-{{ system.name}}
+                        </label>
                         <button type="submit" class="cursor_pointer" style="border: none; background: none;"
-                            id="edit_system_{{ system.designation }}">
+                            id="edit_system_{{ system.id }}">
                             <img src="static\icon-edit.svg" alt="edit system" />
                         </button>
                     </form>
