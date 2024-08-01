@@ -899,8 +899,8 @@ def systemtest():
 @app.route("/edit_system/<string:system_designation>", methods=['GET', 'POST'])
 @login_required
 def edit_system(system_designation):
-    """Add, remove, and edit elements of a star system"""
-    # user got to URL by editing system form
+    """Edit primary elements (name, coordinates, ruling faction, and description) of a star system"""
+    # user got to URL by editing system form and hitting 'SUBMIT'
     if request.method == 'POST':
         # error checking and variable assignment
         if not request.form.get("edit_system_name"):
@@ -939,7 +939,7 @@ def edit_system(system_designation):
         # system notes / description
         system_notes = str(request.form.get("edit_system_notes"))
 
-        results = system_name + "<br />" + str(system_position) + "<br />" + system_faction + "<br />" + system_notes + "<br />" + str(existing_system_coordinates)
+        results = system_name + "<br />" + str(system_position) + "<br />" + system_faction + "<br />" + system_notes
         return results
     
     # or user got to URL from clicking a link (or entering manually)
