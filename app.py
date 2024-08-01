@@ -927,8 +927,16 @@ def edit_system(system_id):
         # system notes / description
         system_notes = str(request.form.get("edit_system_notes"))
 
-        results = system_name + "<br />" + str(system_position) + "<br />" + system_faction + "<br />" + system_notes
-        return results
+        # write changes to database
+        db.execute("UPDATE systems SET position = ?, name = ?, faction = ?, notes = ? WHERE id = ?",
+            system_position,
+            system_name,
+            system_faction,
+            system_notes,
+            system_id)
+        
+        edited_system = db.execute("SELECT * FROM systems WHERE id = ?", system_id)[0]
+        return redirect("/system")
     
     # or user got to URL from clicking a link (or entering manually)
     else:
@@ -945,18 +953,18 @@ def edit_system(system_id):
 
         return render_template("edit_system.html", edited_system=edited_system)
     
-@app.route("/edit_planets/<string:system_id>", methods=['POST'])
+@app.route("/edit_planets/<int:system_id>", methods=['POST'])
 @login_required
 def edit_planets(system_id):
     """Edit names, populations, etc. of existing planets in a system"""
     # TO DO
     edited_system = db.execute("SELECT * FROM systems WHERE id = ?", system_id)[0]
-    return redirect("edit_system.html", edited_system=edited_system)
+    return render_template("/")
 
-@app.route("/new_planet/<string:system_id>", methods=['POST'])
+@app.route("/new_planet/<int:system_id>", methods=['POST'])
 @login_required
 def new_planet(system_id):
     """Create new planet in an existing system"""
     # TO DO
     edited_system = db.execute("SELECT * FROM systems WHERE id = ?", system_id)[0]
-    return redirect("edit_system.html", edited_system=edited_system)
+    return render_template("/")
