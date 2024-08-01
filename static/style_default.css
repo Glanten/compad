@@ -139,7 +139,8 @@ a {
   vertical-align: text-top;
 }
 
-#compose_message {
+#compose_message,
+#edit_system_notes {
   font-family: "Courier New", Courier, monospace;
   font-size: 16px;
 }

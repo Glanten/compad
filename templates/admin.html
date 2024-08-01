@@ -370,7 +370,14 @@
                     {{ system.position }} - {{ system.name }}
                 </td>
                 <td style="text-align: center;">
-                    <img src="static\icon-edit.svg" alt="edit" />
+                    <form action="{{ url_for('edit_system', system_designation=system.designation) }}" method="GET"
+                        style="display: inline;">
+                        <label hidden for="edit_system_{{ system.designation }}">Edit {{ system.designation }}</label>
+                        <button type="submit" class="cursor_pointer" style="border: none; background: none;"
+                            id="edit_system_{{ system.designation }}">
+                            <img src="static\icon-edit.svg" alt="edit system" />
+                        </button>
+                    </form>
                 </td>
             </tr>
             {% endfor %}

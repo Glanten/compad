@@ -3,12 +3,147 @@
 {% block head_block %}
 {% endblock %}
 
-{% block page_title %}Edit System{% endblock %}
+{% block page_title %}Editing: {{ edited_system.position }} - {{ edited_system.name }}{% endblock %}
 
 {% block main %}
 
-<h1>TITLE</h1>
+<h1>Editing: {{ edited_system.position }} - {{ edited_system.name }}</h1>
 
-<p>WORK IN PROGRESS</p>
+<!-- testing ground -->
+<p style="color: chartreuse;">
+    {{ edited_system }}
+</p>
+
+<form action="{{ url_for('edit_system', system_designation=edited_system.designation) }}" method='POST'>
+    <fieldset>
+        <legend>
+            <h2>System Attributes</h2>
+        </legend>
+
+        <table>
+            <!-- NAME -->
+            <tr>
+                <td>
+                    <img src="{{ url_for('static', filename='icon-label.svg') }}" alt="name" />
+                    <label for="edit_system_name">
+                        Name:
+                    </label>
+                </td>
+                <td>
+                    <input autocomplete="off" name="edit_system_name" type="text" id="edit_system_name"
+                        value="{{ edited_system.name }}" />
+                </td>
+            </tr>
+
+            <!-- POSITION -->
+            <tr>
+                <td>
+                    <img src="{{ url_for('static', filename='icon-location.svg') }}" alt="position" />
+                    <label for="edit_system_position">
+                        Position:
+                    </label>
+                </td>
+                <td>
+                    <input autocomplete="off" name="edit_system_position" type="number" min="0000" max="9999"
+                        id="edit_system_position" value="{{ edited_system.position }}" />
+                </td>
+            </tr>
+
+            <!-- FACTION -->
+            <tr>
+                <td>
+                    <img src="{{ url_for('static', filename='icon-faction.svg') }}" alt="faction" />
+                    <label for="edit_system_faction">
+                        Dominant Faction:
+                    </label>
+                </td>
+                <td>
+                    <input autocomplete="off" name="edit_system_faction" type="text" id="edit_system_faction"
+                        value="{{ edited_system.faction }}" size="50" />
+                </td>
+            </tr>
+
+            <!-- NOTES -->
+            <tr>
+                <td>
+                    <img src="{{ url_for('static', filename='icon-document.svg') }}" alt="notes" />
+                    <label for="edit_system_notes">
+                        Notes:
+                    </label>
+                </td>
+                <td>
+                    <textarea id="edit_system_notes" name="edit_system_notes" rows="3" cols="50" class="compose_message"
+                        style="resize: vertical;">{{ edited_system.notes }}</textarea>
+                </td>
+            </tr>
+        </table>
+
+        <p>
+            <label hidden for="update_system_button"></label>
+            <button type="submit" class="ui_button" id="update_system_button">Update system</button>
+        </p>
+    </fieldset>
+</form>
+
+<!-- JSON -->
+<form action="{{ url_for('edit_planets', system_designation=edited_system.designation) }}" method='POST'>
+    <fieldset>
+        <legend>
+            <h2>
+                Planetary Data
+            </h2>
+        </legend>
+
+        <table style="margin-left: auto; margin-right: auto;">
+            {% if edited_system.bodies is not none %}
+            {% for body in edited_system.bodies %}
+            <tr>
+                {% if body.type != 'star' %}
+                <td style="padding-right: 20px;">
+                    <div class="
+                        {% if body.subtype == 'rocky planet' %}
+                        rocky_planet
+                        {% elif body.subtype == 'gas giant' %}
+                        gas_giant
+                        {% elif body.subtype == 'ice giant' %}
+                        ice_giant
+                        {% elif body.subtype == 'asteroid' %}
+                        asteroid
+                        {% elif body.subtype == 'station' %}
+                        space_station
+                        {% endif %}
+                        ">
+                    </div>
+                </td>
+                <td>
+                    <p>
+                        {% for key in body %}
+
+                        {% if key == "name" %}
+                        <strong>{{ body.name }}</strong><br />
+                        {% endif %}
+
+                        {% if key == "type" %}
+                        <strong>Type</strong>: {{ body.subtype }}
+
+                        {% if body.population > 0 %}
+                        <br /><strong>Population</strong>: {{ "{:,}".format(body.population) }}
+                        {% endif %}
+
+                        {% endif %}
+
+                        {% endfor %}
+                    </p>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+            {% else %}
+            NO PLANETARY DATA
+            {% endif %}
+        </table>
+
+    </fieldset>
+</form>
 
 {% endblock %}

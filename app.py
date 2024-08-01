@@ -149,9 +149,9 @@ def edit_user(edit_user_id):
     """Permit admins to edit users' details"""
     logged_in_user_id = session['user_id']
     # fetch user from database
-    edited_user = db.execute("SELECT * FROM users WHERE id = ?", edit_user_id)[0]
 
     if request.method == 'POST':
+        edited_user = db.execute("SELECT * FROM users WHERE id = ?", edit_user_id)[0]
         # check new username has been submitted
         if request.form.get("new_username"):
             new_username = request.form.get("new_username").lower()
@@ -185,6 +185,15 @@ def edit_user(edit_user_id):
     
     else:
         # take admin to edit_user page
+        # error for pages that don't exist
+        users_db = db.execute("SELECT id FROM users")
+        existing_users = []
+        for userid in users_db:
+            existing_users.append(userid['id'])
+        if edit_user_id not in existing_users:
+            return render_template("error.html", error_message="NO SUCH USER")
+        
+        edited_user = db.execute("SELECT * FROM users WHERE id = ?", edit_user_id)[0]
         # compile financial history from database
         this_user = db.execute("SELECT username FROM users WHERE id = ?", edit_user_id)[0]['username']
         this_user_finance_history = db.execute("SELECT * FROM financehistory WHERE isfrom = ? OR isto = ? ORDER BY id", this_user, this_user)
@@ -570,6 +579,14 @@ def new_star_system():
     
     if system_position < 0 or system_position > 9999:
         return render_template("error.html", error_message="system coordinates outside operating parameters")
+    
+    system_coordinates_db = db.execute("SELECT position FROM systems")
+    existing_system_coordinates = []
+    for position in system_coordinates_db:
+        existing_system_coordinates.append(position['position'])
+    
+    if system_position in existing_system_coordinates:
+        return render_template("error.html", error_message="system already exists in location")
 
     # check system_faction field
     if not request.form.get("new_system_faction"):
@@ -854,6 +871,8 @@ def archive_message(msg_id):
 def notfound(e):
     return render_template("error.html", error_message=e)
 
+#--- TESTING GROUND ---#
+
 # star system test pages
 @app.route("/systemtest")
 @login_required
@@ -877,24 +896,79 @@ def systemtest():
     }
     return render_template("systemtest.html", svati_data=svati_data)
 
-@app.route("/systemtest2")
-@login_required
-def systemtest2():
-    system_data = db.execute("SELECT * FROM systems")
-    return render_template("systemtest2.html", system_data=system_data)
-
-@app.route("/edit_system/<str:system_designation>", methods=['GET', 'POST'])
+@app.route("/edit_system/<string:system_designation>", methods=['GET', 'POST'])
 @login_required
 def edit_system(system_designation):
     """Add, remove, and edit elements of a star system"""
     # user got to URL by editing system form
     if request.method == 'POST':
+        # error checking and variable assignment
+        if not request.form.get("edit_system_name"):
+            return render_template("error.html", error_message="No system name submitted")
+        elif not request.form.get("edit_system_position"):
+            return render_template("error.html", error_message="No system position submitted")
+        elif not request.form.get("edit_system_faction"):
+            return render_template("error.html", error_message="No system faction submitted")
+        elif not request.form.get("edit_system_notes"):
+            return render_template("error.html", error_message="No system notes/description submitted")
+        
+        # system name
+        system_name = str(request.form.get("edit_system_name"))
 
-        return redirect("/admin")
+        # system position / coordinates
+        system_position = request.form.get("edit_system_position")
+        try:
+            system_position = int(request.form.get("edit_system_position"))
+        except ValueError:
+            return render_template("error.html", error_message="system coordinates formatted incorrectly")
+    
+        if system_position < 0 or system_position > 9999:
+            return render_template("error.html", error_message="system coordinates outside operating parameters")
+        
+        system_coordinates_db = db.execute("SELECT position FROM systems WHERE NOT designation = ?", system_designation)
+        existing_system_coordinates = []
+        for position in system_coordinates_db:
+            existing_system_coordinates.append(position['position'])
+        
+        if system_position in existing_system_coordinates:
+            return render_template("error.html", error_message="system already exists in location")
+
+        # system faction
+        system_faction = str(request.form.get("edit_system_faction"))
+        
+        # system notes / description
+        system_notes = str(request.form.get("edit_system_notes"))
+
+        results = system_name + "<br />" + str(system_position) + "<br />" + system_faction + "<br />" + system_notes + "<br />" + str(existing_system_coordinates)
+        return results
     
     # or user got to URL from clicking a link (or entering manually)
     else:
         # take admin to edit_system page
-        #edited_system = db.execute("SELECT * FROM systems")
+        # error for pages that don't exist
+        system_designation_db = db.execute("SELECT designation FROM systems")
+        existing_system_designations = []
+        for designation in system_designation_db:
+            existing_system_designations.append(designation['designation'])
+        if system_designation not in existing_system_designations:
+            return render_template("error.html", error_message="THIS SYSTEM DOES NOT EXIST")
+        else:
+            edited_system = db.execute("SELECT * FROM systems WHERE designation = ?", system_designation)[0]
 
-        return render_template("edit_system.html")
+        return render_template("edit_system.html", edited_system=edited_system)
+    
+@app.route("/edit_planets/<string:system_designation>", methods=['POST'])
+@login_required
+def edit_planets(system_designation):
+    """Edit names, populations, etc. of existing planets in a system"""
+    # TO DO
+    edited_system = db.execute("SELECT * FROM systems WHERE designation = ?", system_designation)[0]
+    return redirect("edit_system.html", edited_system=edited_system)
+
+@app.route("/new_planet/<string:system_designation>", methods=['POST'])
+@login_required
+def new_planet(system_designation):
+    """Create new planet in an existing system"""
+    # TO DO
+    edited_system = db.execute("SELECT * FROM systems WHERE designation = ?", system_designation)[0]
+    return redirect("edit_system.html", edited_system=edited_system)
