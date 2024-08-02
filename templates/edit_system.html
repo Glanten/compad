@@ -14,93 +14,90 @@
     {{ edited_system }}
 </p>
 
-<form action="{{ url_for('edit_system', system_id=edited_system.id) }}" method='POST'>
-    <fieldset>
-        <legend>
-            <h2>System Attributes</h2>
-        </legend>
 
-        <table>
-            <!-- NAME -->
-            <tr>
-                <td>
-                    <img src="{{ url_for('static', filename='icon-label.svg') }}" alt="name" />
-                    <label for="edit_system_name">
-                        Name:
-                    </label>
-                </td>
-                <td>
-                    <input autocomplete="off" name="edit_system_name" type="text" id="edit_system_name"
-                        value="{{ edited_system.name }}" />
-                </td>
-            </tr>
+<div>
+    <form action="{{ url_for('edit_system', system_id=edited_system.id) }}" method='POST'>
+        <fieldset>
+            <legend>
+                <h2>System Attributes</h2>
+            </legend>
 
-            <!-- POSITION -->
-            <tr>
-                <td>
-                    <img src="{{ url_for('static', filename='icon-location.svg') }}" alt="position" />
-                    <label for="edit_system_position">
-                        Position:
-                    </label>
-                </td>
-                <td>
-                    <input autocomplete="off" name="edit_system_position" type="number" min="0000" max="9999"
-                        id="edit_system_position" value="{{ edited_system.position }}" />
-                </td>
-            </tr>
+            <table>
+                <!-- NAME -->
+                <tr>
+                    <td>
+                        <img src="{{ url_for('static', filename='icon-label.svg') }}" alt="name" />
+                        <label for="edit_system_name">
+                            Name:
+                        </label>
+                    </td>
+                    <td>
+                        <input autocomplete="off" name="edit_system_name" type="text" id="edit_system_name"
+                            value="{{ edited_system.name }}" />
+                    </td>
+                </tr>
 
-            <!-- FACTION -->
-            <tr>
-                <td>
-                    <img src="{{ url_for('static', filename='icon-faction.svg') }}" alt="faction" />
-                    <label for="edit_system_faction">
-                        Dominant Faction:
-                    </label>
-                </td>
-                <td>
-                    <input autocomplete="off" name="edit_system_faction" type="text" id="edit_system_faction"
-                        value="{{ edited_system.faction }}" size="50" />
-                </td>
-            </tr>
+                <!-- POSITION -->
+                <tr>
+                    <td>
+                        <img src="{{ url_for('static', filename='icon-location.svg') }}" alt="position" />
+                        <label for="edit_system_position">
+                            Position:
+                        </label>
+                    </td>
+                    <td>
+                        <input name="edit_system_position" type="number" min="0000" max="9999" id="edit_system_position"
+                            size="18" value="{{ edited_system.position }}" />
+                    </td>
+                </tr>
 
-            <!-- NOTES -->
-            <tr>
-                <td>
-                    <img src="{{ url_for('static', filename='icon-document.svg') }}" alt="notes" />
-                    <label for="edit_system_notes">
-                        Notes:
-                    </label>
-                </td>
-                <td>
-                    <textarea id="edit_system_notes" name="edit_system_notes" rows="3" cols="50" class="compose_message"
-                        style="resize: vertical;">{{ edited_system.notes }}</textarea>
-                </td>
-            </tr>
-        </table>
+                <!-- FACTION -->
+                <tr>
+                    <td>
+                        <img src="{{ url_for('static', filename='icon-faction.svg') }}" alt="faction" />
+                        <label for="edit_system_faction">
+                            Dominant Faction:
+                        </label>
+                    </td>
+                    <td>
+                        <input autocomplete="off" name="edit_system_faction" type="text" id="edit_system_faction"
+                            value="{{ edited_system.faction }}" size="50" />
+                    </td>
+                </tr>
 
-        <p>
-            <label hidden for="update_system_button"></label>
-            <button type="submit" class="ui_button" id="update_system_button">Update system</button>
-        </p>
-    </fieldset>
-</form>
+                <!-- NOTES -->
+                <tr>
+                    <td>
+                        <img src="{{ url_for('static', filename='icon-document.svg') }}" alt="notes" />
+                        <label for="edit_system_notes">
+                            Notes:
+                        </label>
+                    </td>
+                    <td>
+                        <textarea id="edit_system_notes" name="edit_system_notes" rows="3" cols="50"
+                            class="compose_message" style="resize: vertical;">{{ edited_system.notes }}</textarea>
+                    </td>
+                </tr>
+            </table>
+
+            <p>
+                <label hidden for="update_system_button"></label>
+                <button type="submit" class="ui_button" id="update_system_button">Update system</button>
+            </p>
+        </fieldset>
+    </form>
+</div>
 
 <!-- JSON -->
-<form action="{{ url_for('edit_planets', system_id=edited_system.id) }}" method='POST'>
-    <fieldset>
-        <legend>
-            <h2>
-                Planetary Data
-            </h2>
-        </legend>
+<div>
 
-        <table style="margin-left: auto; margin-right: auto;">
-            {% if edited_system.bodies is not none %}
-            {% for body in edited_system.bodies %}
-            <tr>
-                {% if body.type != 'star' %}
-                <td style="padding-right: 20px;">
-                    <div class="
+    <table style="margin-left: auto; margin-right: auto;">
+        {% if edited_system.bodies is not none %}
+        {% for body in edited_system.bodies %}
+        <tr>
+            {% if body.type != 'star' %}
+            <td style="padding-right: 20px;">
+                <div class="
                         {% if body.subtype == 'rocky planet' %}
                         rocky_planet
                         {% elif body.subtype == 'gas giant' %}
@@ -113,37 +110,131 @@
                         space_station
                         {% endif %}
                         ">
-                    </div>
+                </div>
+            </td>
+            <td>
+                <p>
+                    {% for key in body %}
+
+                    {% if key == "name" %}
+                    <strong>{{ body.name }}</strong><br />
+                    {% endif %}
+
+                    {% if key == "type" %}
+                    <strong>Type</strong>: {{ body.subtype }}
+
+                    {% if body.population > 0 %}
+                    <br /><strong>Population</strong>: {{ "{:,}".format(body.population) }}
+                    {% endif %}
+
+                    {% endif %}
+
+                    {% endfor %}
+                </p>
+            </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+        {% else %}
+        NO PLANETARY DATA
+        {% endif %}
+    </table>
+</div>
+
+<form action="{{ url_for('new_planet', system_id=edited_system.id) }}" method='POST'>
+    <fieldset>
+        <legend>
+            <h2>
+                New Point of Interest
+            </h2>
+        </legend>
+
+        <table>
+            <!-- NAME -->
+            <tr>
+                <td>
+                    <img src="{{ url_for('static', filename='icon-label.svg') }}" alt="name" />
+                    <label for="new_planet_name">Name</label>
                 </td>
                 <td>
-                    <p>
-                        {% for key in body %}
-
-                        {% if key == "name" %}
-                        <strong>{{ body.name }}</strong><br />
-                        {% endif %}
-
-                        {% if key == "type" %}
-                        <strong>Type</strong>: {{ body.subtype }}
-
-                        {% if body.population > 0 %}
-                        <br /><strong>Population</strong>: {{ "{:,}".format(body.population) }}
-                        {% endif %}
-
-                        {% endif %}
-
-                        {% endfor %}
-                    </p>
+                    <input autocomplete="off" name="new_planet_name" type="text" id="new_planet_name"
+                        placeholder="Name" />
                 </td>
-                {% endif %}
             </tr>
-            {% endfor %}
-            {% else %}
-            NO PLANETARY DATA
-            {% endif %}
+
+            <!-- TYPE -->
+            <tr>
+                <td>
+                    <img src="{{ url_for('static', filename='icon-label.svg') }}" alt="type" />
+                    <label for="new_planet_type">Type</label>
+                </td>
+                <td>
+                    <select name="new_planet_type" id="new_planet_type" onchange="toggleSubType()">
+                        <option disabled selected>
+                            Type
+                        </option>
+                        <option value="other">
+                            Other
+                        </option>
+                        <option value="planet">
+                            Planet
+                        </option>
+                        <option value="star">
+                            Star
+                        </option>
+                    </select>
+                </td>
+            </tr>
+
+            <!-- SUBTYPE -->
+            <tr>
+                <td>
+                    <img src="{{ url_for('static', filename='icon-label.svg') }}" alt="type" />
+                    <label for="new_planet_subtype">Subtype</label>
+                </td>
+                <td>
+                    <select name="new_planet_subtype" id="new_planet_subtype">
+                        <option disabled selected>
+                            Subtype
+                        </option>
+                    </select>
+                </td>
+            </tr>
+
+            <!-- POPULATION -->
+            <tr>
+                <td>
+                    <img src="{{ url_for('static', filename='icon-label.svg') }}" alt="population" />
+                    <label for="new_planet_population">Population</label>
+                </td>
+                <td>
+                    <input name="new_planet_population" type="number" min="0" id="new_planet_population" size="18"
+                        value="0" />
+                </td>
+            </tr>
+
+            <!-- NOTES -->
+            <tr>
+                <td>
+                    <img src="{{ url_for('static', filename='icon-label.svg') }}" alt="notes" />
+                    <label for="new_planet_notes">Notes</label>
+                </td>
+                <td>
+                    <input autocomplete="off" name="new_planet_notes" type="text" id="new_planet_notes"
+                        placeholder="Notes" />
+                </td>
+            </tr>
         </table>
 
+        <label hidden for="new_planet_button"></label>
+        <button id="new_planet_button" class="ui_button" type="submit">
+            Create location
+        </button>
     </fieldset>
+
+    <div class="hidden">
+        <script src="{{ url_for('static', filename='system.js') }}"></script>
+    </div>
 </form>
 
 {% endblock %}

@@ -959,7 +959,7 @@ def edit_planets(system_id):
     """Edit names, populations, etc. of existing planets in a system"""
     # TO DO
     edited_system = db.execute("SELECT * FROM systems WHERE id = ?", system_id)[0]
-    return render_template("/")
+    return redirect("/")
 
 @app.route("/new_planet/<int:system_id>", methods=['POST'])
 @login_required
@@ -967,4 +967,4 @@ def new_planet(system_id):
     """Create new planet in an existing system"""
     # TO DO
     edited_system = db.execute("SELECT * FROM systems WHERE id = ?", system_id)[0]
-    return render_template("/")
+    return redirect("/")
