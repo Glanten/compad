@@ -967,4 +967,15 @@ def new_planet(system_id):
     """Create new planet in an existing system"""
     # TO DO
     edited_system = db.execute("SELECT * FROM systems WHERE id = ?", system_id)[0]
-    return redirect("/")
+
+    new_planet_name = request.form.get("new_planet_name")
+    new_planet_type = request.form.get("new_planet_type")
+    new_planet_subtype = request.form.get("new_planet_subtype")
+    new_planet_population = request.form.get("new_planet_population")
+    new_planet_notes = request.form.get("new_planet_notes")
+
+    new_planet_input = str(new_planet_name) + "<br />" + str(new_planet_type) + "<br />" + str(new_planet_subtype) + "<br />" + str(new_planet_population) + "<br />" + str(new_planet_notes)
+
+    return new_planet_input
+
+    #return redirect("/")

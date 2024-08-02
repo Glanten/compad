@@ -169,7 +169,7 @@
                     <label for="new_planet_type">Type</label>
                 </td>
                 <td>
-                    <select name="new_planet_type" id="new_planet_type" onchange="toggleSubType()">
+                    <select name="new_planet_type" id="new_planet_type" onchange="toggleSubType(); togglePopulation()">
                         <option disabled selected>
                             Type
                         </option>
@@ -202,7 +202,7 @@
             </tr>
 
             <!-- POPULATION -->
-            <tr>
+            <tr id="new_planet_population_row">
                 <td>
                     <img src="{{ url_for('static', filename='icon-label.svg') }}" alt="population" />
                     <label for="new_planet_population">Population</label>
