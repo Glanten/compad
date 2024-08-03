@@ -1,7 +1,7 @@
 from cs50 import SQL
 from flask import Flask, redirect, render_template, request, session, send_file
 from flask_session import Session
-# import json # this will be used to store star system data in the future
+import json
 import os
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -965,7 +965,12 @@ def edit_planets(system_id):
 @login_required
 def new_planet(system_id):
     """Create new planet in an existing system"""
-    # TO DO
+    # Error checking
+
+
+
+
+
     edited_system = db.execute("SELECT * FROM systems WHERE id = ?", system_id)[0]
 
     new_planet_name = request.form.get("new_planet_name")
@@ -974,8 +979,24 @@ def new_planet(system_id):
     new_planet_population = request.form.get("new_planet_population")
     new_planet_notes = request.form.get("new_planet_notes")
 
-    new_planet_input = str(new_planet_name) + "<br />" + str(new_planet_type) + "<br />" + str(new_planet_subtype) + "<br />" + str(new_planet_population) + "<br />" + str(new_planet_notes)
+    # convert into JSON
+    new_planet_data = {
+        "name": new_planet_name,
+        "type": new_planet_type,
+        "subtype": new_planet_subtype,
+        "population": new_planet_population,
+        "notes": new_planet_notes
+    }
 
-    return new_planet_input
+    # testing
 
-    #return redirect("/")
+    
+    # check if there is nothing in the current bodies list
+    if not db.execute("SELECT name FROM systems WHERE bodies IS NOT NULL AND id = ?", system_id):
+        edited_system['bodies'] = new_planet_data
+    else:
+        # if there is something in the bodies list, add to it
+        current_bodies = edited_system['bodies']
+        edited_system['bodies'] = [current_bodies , new_planet_data]
+
+    return "<p>" + str(new_planet_data) + "</p><p>" + str(edited_system) + "</p>"
