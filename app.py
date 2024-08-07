@@ -965,19 +965,65 @@ def edit_planets(system_id):
 @login_required
 def new_planet(system_id):
     """Create new planet in an existing system"""
-    # Error checking
-
-
-
-
-
     edited_system = db.execute("SELECT * FROM systems WHERE id = ?", system_id)[0]
+    # Error checking
+    # planet name error checking
+    if not request.form.get("new_planet_name"):
+        return render_template("error.html", error_message="No planet name submitted")
+    else:
+        new_planet_name = str(request.form.get("new_planet_name"))
+        # how to check for duplicate names?
+    
+    # planet population error checking
+    if not request.form.get("new_planet_population"):
+            new_planet_population = 0
+    else:
+        try:
+            new_planet_population = int(request.form.get("new_planet_population"))
+        except ValueError:
+            return render_template("error.html", error_message="Planet population incorrectly formatted")
 
-    new_planet_name = request.form.get("new_planet_name")
-    new_planet_type = request.form.get("new_planet_type")
-    new_planet_subtype = request.form.get("new_planet_subtype")
-    new_planet_population = request.form.get("new_planet_population")
-    new_planet_notes = request.form.get("new_planet_notes")
+    # planet type error checking
+    valid_planet_types = ["other", "planet", "star"]
+    if not request.form.get("new_planet_type"):
+        return render_template("error.html", error_message="No type submitted for new point of interest")
+    elif request.form.get("new_planet_type") not in valid_planet_types:
+        return render_template("error.html", error_message="Point of interest type invalid")
+    else:
+        try:
+            new_planet_type = str(request.form.get("new_planet_type"))
+        except ValueError:
+            return render_template("error.html", error_message="Point of interest type formatted incorrectly")
+    
+    # planet subtype error checking
+    if not request.form.get("new_planet_subtype"):
+        return render_template("error.html", error_message="No subtype submitted for new point of interest")
+    
+    if new_planet_type == "other":
+        valid_planet_subtypes = ["asteroid", "station"]
+    elif new_planet_type == "planet":
+        valid_planet_subtypes = ["rocky planet", "gas giant", "ice giant"]
+    elif new_planet_type == "star":
+        valid_planet_subtypes = ["main sequence star", "dwarf star", "giant star", "weird star"]
+    else:
+        return render_template("error.html", error_message="Point of interest type invalid at second check")
+    
+    if request.form.get("new_planet_subtype") not in valid_planet_subtypes:
+        return render_template("error.html", error_message="Point of interest subtype invalid")
+    
+    try:
+        new_planet_subtype = str(request.form.get("new_planet_subtype"))
+    except ValueError:
+        return render_template("error.html", error_message="Point of interest subtype formatted incorrectly")
+
+    # planet notes error checking
+    if not request.form.get("new_planet_notes"):
+        new_planet_notes = ""
+    else:
+        try:
+            new_planet_notes = str(request.form.get("new_planet_notes"))
+        except ValueError:
+            return render_template("error.html", error_message="Point of interest notes formatted incorrectly")
 
     # convert into dict
     new_planet_data = {
@@ -1002,4 +1048,4 @@ def new_planet(system_id):
     system_data = edited_system
 
     #return "<p>" + str(new_planet_data) + "</p><p>" + str(edited_system) + "</p>"
-    return render_template("systemedit.html", system_data=system_data)
+    return render_template("systemedit.html", system_data=system_data, edited_system=edited_system)

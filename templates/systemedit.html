@@ -15,6 +15,17 @@
     <div class="darker">
         <h2>System Overview</h2>
         <p>
+            <strong>Notable Stars</strong>:
+            <!--
+                TO DO:  what to do when no stars are detailed
+            -->
+            {% for planet in system_data.bodies %}
+            {% if planet.type == "star" %}
+            {{ planet.name }}, {{ planet.subtype }}, {{ planet.notes }}
+            {% endif %}
+            {% endfor %}
+        </p>
+        <p>
             <strong>Dominant Faction</strong>: {{ system_data.faction }}
         </p>
         <p>
@@ -22,16 +33,68 @@
         </p>
     </div>
 
-    <div>
-        There are some celestial bodies present:
-        {% for planet in system_data.bodies %}
-        {% if planet.subtype == 'asteroid' %}
-        <p class="asteroid"></p>
-        {% endif %}
-        {{ planet }}
+    <div class="darker">
+        <h2>Points of Interest</h2>
+
+        <table style="margin-left: auto; margin-right: auto;">
+            {% for planet in system_data.bodies %}
+            <tr>
+                <td style="padding-right: 20px;">
+                    <div class="
+                    {% if planet.subtype == 'rocky planet' %}
+                    rocky_planet
+                    {% elif planet.subtype == 'gas giant' %}
+                    gas_giant
+                    {% elif planet.subtype == 'ice giant' %}
+                    ice_giant
+                    {% elif planet.subtype == 'asteroid' %}
+                    asteroid
+                    {% elif planet.subtype == 'station' %}
+                    space_station
+                    {% endif %}
+                    "></div>
+                </td>
+                <td>
+                    <table style="padding: 5px;">
+                        <!--
+                            TO DO:  "graphic" for stars
+                        -->
+                        {% for key in planet %}
+                        <tr>
+                            {% if key == "name" %}
+                            <td><strong>Name</strong>:</td>
+                            <td style="padding-left: 10px;">{{ planet.name.title() }}</td>
+                            {% elif key == "subtype" %}
+                            <td><strong>Type</strong>:</td>
+                            <td style="padding-left: 10px;">{{ planet.subtype.title() }}</td>
+                            {% elif key == "population" %}
+                            {% if planet.population > 0 %}
+                            <td><strong>Pop</strong>:</td>
+                            <td style="padding-left: 10px;">{{ "{:,}".format(planet.population) }}</td>
+                            {% endif %}
+                            {% elif key == "notes" %}
+                            <td><strong>Notes</strong>:</td>
+                            <td style="padding-left: 10px;">{{ planet.notes }}</td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </td>
+            </tr>
+        </table>
         {% endfor %}
     </div>
 
 </div>
+
+<p>
+    Edited System:<br />
+    {{ edited_system }}
+</p>
+
+<p>
+    Edited System Bodies:<br />
+    {{ edited_system.bodies }}
+</p>
 
 {% endblock %}
