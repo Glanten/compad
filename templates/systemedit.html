@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block head_block %}
+{% endblock %}
+
+{% block page_title %}{{ system_data.name }}{% endblock %}
+
+{% block main %}
+
+<h1>{{ system_data.position }} - {{ system_data.name }}</h1>
+
+<p style="color: chartreuse;">System Data: {{ system_data }}</p>
+
+<div>
+    <div class="darker">
+        <h2>System Overview</h2>
+        <p>
+            <strong>Dominant Faction</strong>: {{ system_data.faction }}
+        </p>
+        <p>
+            {{ system_data.notes }}
+        </p>
+    </div>
+
+    <div>
+        There are some celestial bodies present:
+        {% for planet in system_data.bodies %}
+        {% if planet.subtype == 'asteroid' %}
+        <p class="asteroid"></p>
+        {% endif %}
+        {{ planet }}
+        {% endfor %}
+    </div>
+
+</div>
+
+{% endblock %}

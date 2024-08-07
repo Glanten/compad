@@ -862,27 +862,27 @@ def notfound(e):
 #--- TESTING GROUND ---#
 
 # star system test pages
-@app.route("/systemtest")
-@login_required
-def systemtest():
-    svati_data = {
-        "name": "Svati",
-        "position": 1312,
-        "faction": "Aurora Pioneering Division, Galactic Dynamics",
-        "notes": "The largest Galactic Dynamics colony in the Ithikan Frontier",
-        "bodies": [
-            {"name": "Svati", "type": "star", "subtype": "orange dwarf"},
-            {"name": "SV001", "type": "planet", "subtype": "rocky planet", "population": 0},
-            {"name": "Svati Prime", "type": "planet", "subtype": "rocky planet", "population": 77000000},
-            {"name": "SV003", "type": "planet", "subtype": "rocky planet", "population": 0},
-            {"name": "Jata", "type": "planet", "subtype": "gas giant", "population": 0},
-            {"name": "Atargatis", "type": "planet", "subtype": "gas giant", "population": 0},
-            {"name": "SV006", "type": "planet", "subtype": "ice giant", "population": 0},
-            {"name": "test asteroid", "type": "planet", "subtype": "asteroid", "population": 0},
-            {"name": "test station", "type": "planet", "subtype": "station", "population": 0},
-        ]
-    }
-    return render_template("systemtest.html", svati_data=svati_data)
+#@app.route("/systemtest")
+#@login_required
+#def systemtest():
+#    svati_data = {
+#        "name": "Svati",
+#        "position": 1312,
+#        "faction": "Aurora Pioneering Division, Galactic Dynamics",
+#        "notes": "The largest Galactic Dynamics colony in the Ithikan Frontier",
+#        "bodies": [
+#            {"name": "Svati", "type": "star", "subtype": "orange dwarf"},
+#            {"name": "SV001", "type": "planet", "subtype": "rocky planet", "population": 0},
+#            {"name": "Svati Prime", "type": "planet", "subtype": "rocky planet", "population": 77000000},
+#            {"name": "SV003", "type": "planet", "subtype": "rocky planet", "population": 0},
+#            {"name": "Jata", "type": "planet", "subtype": "gas giant", "population": 0},
+#            {"name": "Atargatis", "type": "planet", "subtype": "gas giant", "population": 0},
+#            {"name": "SV006", "type": "planet", "subtype": "ice giant", "population": 0},
+#            {"name": "test asteroid", "type": "planet", "subtype": "asteroid", "population": 0},
+#            {"name": "test station", "type": "planet", "subtype": "station", "population": 0},
+#        ]
+#    }
+#    return render_template("systemtest.html", svati_data=svati_data)
 
 @app.route("/edit_system/<int:system_id>", methods=['GET', 'POST'])
 @login_required
@@ -979,7 +979,7 @@ def new_planet(system_id):
     new_planet_population = request.form.get("new_planet_population")
     new_planet_notes = request.form.get("new_planet_notes")
 
-    # convert into JSON
+    # convert into dict
     new_planet_data = {
         "name": new_planet_name,
         "type": new_planet_type,
@@ -993,10 +993,13 @@ def new_planet(system_id):
     
     # check if there is nothing in the current bodies list
     if not db.execute("SELECT name FROM systems WHERE bodies IS NOT NULL AND id = ?", system_id):
-        edited_system['bodies'] = new_planet_data
+        edited_system['bodies'] = [new_planet_data]
     else:
         # if there is something in the bodies list, add to it
         current_bodies = edited_system['bodies']
         edited_system['bodies'] = [current_bodies , new_planet_data]
 
-    return "<p>" + str(new_planet_data) + "</p><p>" + str(edited_system) + "</p>"
+    system_data = edited_system
+
+    #return "<p>" + str(new_planet_data) + "</p><p>" + str(edited_system) + "</p>"
+    return render_template("systemedit.html", system_data=system_data)

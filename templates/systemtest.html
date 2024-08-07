@@ -3,17 +3,16 @@
 {% block head_block %}
 {% endblock %}
 
-{% block page_title %}{{ svati_data.name }}{% endblock %}
+{% block page_title %}{{ system_data.name }}{% endblock %}
 
 {% block main %}
 
-<h1>{{ svati_data.position }} - {{ svati_data.name }}</h1>
+<h1>{{ system_data.position }} - {{ system_data.name }}</h1>
 
-<p style="color: chartreuse;">Svati Data: {{ svati_data }}</p>
+<p style="color: chartreuse;">System Data: {{ system_data }}</p>
 
 <div>
     <div class="darker">
-        <!-- vital statistics, including primary stellar body/bodies -->
         <h2>System Overview</h2>
         <p>
             {% set starcount = svati_data.bodies|selectattr("type", "equalto", "star")|list %}
@@ -45,7 +44,6 @@
     </div>
 
     <div class="darker">
-        <!-- celestial bodies -->
         <h2>Celestial Bodies</h2>
         <table style="margin-left: auto; margin-right: auto;">
             {% for body in svati_data.bodies %}
