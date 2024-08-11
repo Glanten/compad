@@ -781,7 +781,7 @@ def new_planet(system_id):
     else:
         system_data['bodies'] = []
     
-    return render_template("systemedit.html", system_data=system_data)
+    return render_template("edit_system.html", edited_system=system_data)
 
 #--- STARCHARTS ---#
 
