@@ -605,6 +605,184 @@ def new_star_system():
 
     return redirect("/admin")
 
+@app.route("/edit_system/<int:system_id>", methods=['GET', 'POST'])
+@login_required
+def edit_system(system_id):
+    """Edit primary elements (name, coordinates, ruling faction, and description) of a star system"""
+    # user got to URL by editing system form and hitting 'SUBMIT'
+    if request.method == 'POST':
+        # error checking and variable assignment
+        if not request.form.get("edit_system_name"):
+            return render_template("error.html", error_message="No system name submitted")
+        elif not request.form.get("edit_system_position"):
+            return render_template("error.html", error_message="No system position submitted")
+        elif not request.form.get("edit_system_faction"):
+            return render_template("error.html", error_message="No system faction submitted")
+        elif not request.form.get("edit_system_notes"):
+            return render_template("error.html", error_message="No system notes/description submitted")
+        
+        # system name
+        system_name = str(request.form.get("edit_system_name"))
+
+        # system position / coordinates
+        system_position = request.form.get("edit_system_position")
+        try:
+            system_position = int(request.form.get("edit_system_position"))
+        except ValueError:
+            return render_template("error.html", error_message="system coordinates formatted incorrectly")
+    
+        if system_position < 0 or system_position > 9999:
+            return render_template("error.html", error_message="system coordinates outside operating parameters")
+        
+        system_coordinates_db = db.execute("SELECT position FROM systems WHERE NOT id = ?", system_id)
+        existing_system_coordinates = []
+        for position in system_coordinates_db:
+            existing_system_coordinates.append(position['position'])
+        
+        if system_position in existing_system_coordinates:
+            return render_template("error.html", error_message="system already exists in location")
+
+        # system faction
+        system_faction = str(request.form.get("edit_system_faction"))
+        
+        # system notes / description
+        system_notes = str(request.form.get("edit_system_notes"))
+
+        # write changes to database
+        db.execute("UPDATE systems SET position = ?, name = ?, faction = ?, notes = ? WHERE id = ?",
+            system_position,
+            system_name,
+            system_faction,
+            system_notes,
+            system_id)
+        
+        edited_system = db.execute("SELECT * FROM systems WHERE id = ?", system_id)[0]
+        return redirect("/system")
+    
+    # or user got to URL from clicking a link (or entering manually)
+    else:
+        # take admin to edit_system page
+        # error for pages that don't exist
+        system_db = db.execute("SELECT id FROM systems")
+        existing_systems = []
+        for system in system_db:
+            existing_systems.append(system['id'])
+        if system_id not in existing_systems:
+            return render_template("error.html", error_message="NO SUCH SYSTEM")
+        else:
+            edited_system = db.execute("SELECT * FROM systems WHERE id = ?", system_id)[0]
+
+        # parse JSON into Python object before passing to webpage/template
+        if edited_system['bodies']:
+            edited_system['bodies'] = json.loads(edited_system['bodies']) 
+        else:
+            edited_system['bodies'] = []
+
+        return render_template("edit_system.html", edited_system=edited_system)
+    
+@app.route("/edit_planets/<int:system_id>", methods=['POST'])
+@login_required
+def edit_planets(system_id):
+    """Edit names, populations, etc. of existing planets in a system"""
+    # TO DO
+    edited_system = db.execute("SELECT * FROM systems WHERE id = ?", system_id)[0]
+    return redirect("/")
+
+@app.route("/new_planet/<int:system_id>", methods=['POST'])
+@login_required
+def new_planet(system_id):
+    """Create new planet in an existing system"""
+    edited_system = db.execute("SELECT * FROM systems WHERE id = ?", system_id)[0]
+    # Error checking
+    # planet name error checking
+    if not request.form.get("new_planet_name"):
+        return render_template("error.html", error_message="No planet name submitted")
+    else:
+        new_planet_name = str(request.form.get("new_planet_name"))
+        # how to check for duplicate names?
+    
+    # planet population error checking
+    if not request.form.get("new_planet_population"):
+            new_planet_population = 0
+    else:
+        try:
+            new_planet_population = int(request.form.get("new_planet_population"))
+        except ValueError:
+            return render_template("error.html", error_message="Planet population incorrectly formatted")
+
+    # planet type error checking
+    valid_planet_types = ["other", "planet", "star"]
+    if not request.form.get("new_planet_type"):
+        return render_template("error.html", error_message="No type submitted for new point of interest")
+    elif request.form.get("new_planet_type") not in valid_planet_types:
+        return render_template("error.html", error_message="Point of interest type invalid")
+    else:
+        try:
+            new_planet_type = str(request.form.get("new_planet_type"))
+        except ValueError:
+            return render_template("error.html", error_message="Point of interest type formatted incorrectly")
+    
+    # planet subtype error checking
+    if not request.form.get("new_planet_subtype"):
+        return render_template("error.html", error_message="No subtype submitted for new point of interest")
+    
+    if new_planet_type == "other":
+        valid_planet_subtypes = ["asteroid", "station"]
+    elif new_planet_type == "planet":
+        valid_planet_subtypes = ["rocky planet", "gas giant", "ice giant"]
+    elif new_planet_type == "star":
+        valid_planet_subtypes = ["main sequence star", "dwarf star", "giant star", "weird star"]
+    else:
+        return render_template("error.html", error_message="Point of interest type invalid at second check")
+    
+    if request.form.get("new_planet_subtype") not in valid_planet_subtypes:
+        return render_template("error.html", error_message="Point of interest subtype invalid")
+    
+    try:
+        new_planet_subtype = str(request.form.get("new_planet_subtype"))
+    except ValueError:
+        return render_template("error.html", error_message="Point of interest subtype formatted incorrectly")
+
+    # planet notes error checking
+    if not request.form.get("new_planet_notes"):
+        new_planet_notes = ""
+    else:
+        try:
+            new_planet_notes = str(request.form.get("new_planet_notes"))
+        except ValueError:
+            return render_template("error.html", error_message="Point of interest notes formatted incorrectly")
+
+    # convert into dict
+    new_planet_data = {
+        "name": new_planet_name,
+        "type": new_planet_type,
+        "subtype": new_planet_subtype,
+        "population": new_planet_population,
+        "notes": new_planet_notes
+    }
+
+    # retrieve existing planetary data
+    if edited_system['bodies']:
+        current_bodies_list = json.loads(edited_system['bodies'])
+    else:
+        current_bodies_list = []
+    
+    # append the new planet to the list
+    current_bodies_list.append(new_planet_data)
+    # convert to JSON in preparation for uploading to database
+    updated_bodies_json = json.dumps(current_bodies_list)
+    # update database entry
+    db.execute("UPDATE systems SET bodies = ? WHERE id = ?", updated_bodies_json, system_id)
+
+    system_data = db.execute("SELECT * FROM systems WHERE id = ?", system_id)[0]
+    # parse JSON into Python object before passing to webpage/template
+    if system_data['bodies']:
+        system_data['bodies'] = json.loads(system_data['bodies']) 
+    else:
+        system_data['bodies'] = []
+    
+    return render_template("systemedit.html", system_data=system_data)
+
 #--- STARCHARTS ---#
 
 @app.route("/starmap")
@@ -841,7 +1019,6 @@ def compad():
             recipient_list=recipient_list,
             )
 
-# below function is ready, but no link currently exists to trigger it
 @app.route("/archive_message/<int:msg_id>", methods=['POST'])
 @login_required
 def archive_message(msg_id):
@@ -859,193 +1036,3 @@ def archive_message(msg_id):
 def notfound(e):
     return render_template("error.html", error_message=e)
 
-#--- TESTING GROUND ---#
-
-# star system test pages
-#@app.route("/systemtest")
-#@login_required
-#def systemtest():
-#    svati_data = {
-#        "name": "Svati",
-#        "position": 1312,
-#        "faction": "Aurora Pioneering Division, Galactic Dynamics",
-#        "notes": "The largest Galactic Dynamics colony in the Ithikan Frontier",
-#        "bodies": [
-#            {"name": "Svati", "type": "star", "subtype": "orange dwarf"},
-#            {"name": "SV001", "type": "planet", "subtype": "rocky planet", "population": 0},
-#            {"name": "Svati Prime", "type": "planet", "subtype": "rocky planet", "population": 77000000},
-#            {"name": "SV003", "type": "planet", "subtype": "rocky planet", "population": 0},
-#            {"name": "Jata", "type": "planet", "subtype": "gas giant", "population": 0},
-#            {"name": "Atargatis", "type": "planet", "subtype": "gas giant", "population": 0},
-#            {"name": "SV006", "type": "planet", "subtype": "ice giant", "population": 0},
-#            {"name": "test asteroid", "type": "planet", "subtype": "asteroid", "population": 0},
-#            {"name": "test station", "type": "planet", "subtype": "station", "population": 0},
-#        ]
-#    }
-#    return render_template("systemtest.html", svati_data=svati_data)
-
-@app.route("/edit_system/<int:system_id>", methods=['GET', 'POST'])
-@login_required
-def edit_system(system_id):
-    """Edit primary elements (name, coordinates, ruling faction, and description) of a star system"""
-    # user got to URL by editing system form and hitting 'SUBMIT'
-    if request.method == 'POST':
-        # error checking and variable assignment
-        if not request.form.get("edit_system_name"):
-            return render_template("error.html", error_message="No system name submitted")
-        elif not request.form.get("edit_system_position"):
-            return render_template("error.html", error_message="No system position submitted")
-        elif not request.form.get("edit_system_faction"):
-            return render_template("error.html", error_message="No system faction submitted")
-        elif not request.form.get("edit_system_notes"):
-            return render_template("error.html", error_message="No system notes/description submitted")
-        
-        # system name
-        system_name = str(request.form.get("edit_system_name"))
-
-        # system position / coordinates
-        system_position = request.form.get("edit_system_position")
-        try:
-            system_position = int(request.form.get("edit_system_position"))
-        except ValueError:
-            return render_template("error.html", error_message="system coordinates formatted incorrectly")
-    
-        if system_position < 0 or system_position > 9999:
-            return render_template("error.html", error_message="system coordinates outside operating parameters")
-        
-        system_coordinates_db = db.execute("SELECT position FROM systems WHERE NOT id = ?", system_id)
-        existing_system_coordinates = []
-        for position in system_coordinates_db:
-            existing_system_coordinates.append(position['position'])
-        
-        if system_position in existing_system_coordinates:
-            return render_template("error.html", error_message="system already exists in location")
-
-        # system faction
-        system_faction = str(request.form.get("edit_system_faction"))
-        
-        # system notes / description
-        system_notes = str(request.form.get("edit_system_notes"))
-
-        # write changes to database
-        db.execute("UPDATE systems SET position = ?, name = ?, faction = ?, notes = ? WHERE id = ?",
-            system_position,
-            system_name,
-            system_faction,
-            system_notes,
-            system_id)
-        
-        edited_system = db.execute("SELECT * FROM systems WHERE id = ?", system_id)[0]
-        return redirect("/system")
-    
-    # or user got to URL from clicking a link (or entering manually)
-    else:
-        # take admin to edit_system page
-        # error for pages that don't exist
-        system_db = db.execute("SELECT id FROM systems")
-        existing_systems = []
-        for system in system_db:
-            existing_systems.append(system['id'])
-        if system_id not in existing_systems:
-            return render_template("error.html", error_message="NO SUCH SYSTEM")
-        else:
-            edited_system = db.execute("SELECT * FROM systems WHERE id = ?", system_id)[0]
-
-        return render_template("edit_system.html", edited_system=edited_system)
-    
-@app.route("/edit_planets/<int:system_id>", methods=['POST'])
-@login_required
-def edit_planets(system_id):
-    """Edit names, populations, etc. of existing planets in a system"""
-    # TO DO
-    edited_system = db.execute("SELECT * FROM systems WHERE id = ?", system_id)[0]
-    return redirect("/")
-
-@app.route("/new_planet/<int:system_id>", methods=['POST'])
-@login_required
-def new_planet(system_id):
-    """Create new planet in an existing system"""
-    edited_system = db.execute("SELECT * FROM systems WHERE id = ?", system_id)[0]
-    # Error checking
-    # planet name error checking
-    if not request.form.get("new_planet_name"):
-        return render_template("error.html", error_message="No planet name submitted")
-    else:
-        new_planet_name = str(request.form.get("new_planet_name"))
-        # how to check for duplicate names?
-    
-    # planet population error checking
-    if not request.form.get("new_planet_population"):
-            new_planet_population = 0
-    else:
-        try:
-            new_planet_population = int(request.form.get("new_planet_population"))
-        except ValueError:
-            return render_template("error.html", error_message="Planet population incorrectly formatted")
-
-    # planet type error checking
-    valid_planet_types = ["other", "planet", "star"]
-    if not request.form.get("new_planet_type"):
-        return render_template("error.html", error_message="No type submitted for new point of interest")
-    elif request.form.get("new_planet_type") not in valid_planet_types:
-        return render_template("error.html", error_message="Point of interest type invalid")
-    else:
-        try:
-            new_planet_type = str(request.form.get("new_planet_type"))
-        except ValueError:
-            return render_template("error.html", error_message="Point of interest type formatted incorrectly")
-    
-    # planet subtype error checking
-    if not request.form.get("new_planet_subtype"):
-        return render_template("error.html", error_message="No subtype submitted for new point of interest")
-    
-    if new_planet_type == "other":
-        valid_planet_subtypes = ["asteroid", "station"]
-    elif new_planet_type == "planet":
-        valid_planet_subtypes = ["rocky planet", "gas giant", "ice giant"]
-    elif new_planet_type == "star":
-        valid_planet_subtypes = ["main sequence star", "dwarf star", "giant star", "weird star"]
-    else:
-        return render_template("error.html", error_message="Point of interest type invalid at second check")
-    
-    if request.form.get("new_planet_subtype") not in valid_planet_subtypes:
-        return render_template("error.html", error_message="Point of interest subtype invalid")
-    
-    try:
-        new_planet_subtype = str(request.form.get("new_planet_subtype"))
-    except ValueError:
-        return render_template("error.html", error_message="Point of interest subtype formatted incorrectly")
-
-    # planet notes error checking
-    if not request.form.get("new_planet_notes"):
-        new_planet_notes = ""
-    else:
-        try:
-            new_planet_notes = str(request.form.get("new_planet_notes"))
-        except ValueError:
-            return render_template("error.html", error_message="Point of interest notes formatted incorrectly")
-
-    # convert into dict
-    new_planet_data = {
-        "name": new_planet_name,
-        "type": new_planet_type,
-        "subtype": new_planet_subtype,
-        "population": new_planet_population,
-        "notes": new_planet_notes
-    }
-
-    # testing
-
-    
-    # check if there is nothing in the current bodies list
-    if not db.execute("SELECT name FROM systems WHERE bodies IS NOT NULL AND id = ?", system_id):
-        edited_system['bodies'] = [new_planet_data]
-    else:
-        # if there is something in the bodies list, add to it
-        current_bodies = edited_system['bodies']
-        edited_system['bodies'] = [current_bodies , new_planet_data]
-
-    system_data = edited_system
-
-    #return "<p>" + str(new_planet_data) + "</p><p>" + str(edited_system) + "</p>"
-    return render_template("systemedit.html", system_data=system_data, edited_system=edited_system)

@@ -9,12 +9,6 @@
 
 <h1>Editing: {{ edited_system.position }} - {{ edited_system.name }}</h1>
 
-<!-- testing ground -->
-<p style="color: chartreuse;">
-    {{ edited_system }}
-</p>
-
-
 <div>
     <form action="{{ url_for('edit_system', system_id=edited_system.id) }}" method='POST'>
         <fieldset>
@@ -129,6 +123,10 @@
 
                     {% endif %}
 
+                    {% if key == "notes" %}
+                    <br /><strong>Notes</strong>: {{ body.notes }}
+                    {% endif %}
+
                     {% endfor %}
                 </p>
             </td>
@@ -136,7 +134,7 @@
         </tr>
         {% endfor %}
         {% else %}
-        NO PLANETARY DATA
+        <tr>NO PLANETARY DATA</tr>
         {% endif %}
     </table>
 </div>
